@@ -1,4 +1,4 @@
-package deepnyangning.capstonebe;
+package com.deepnyangning.capstonebe;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
