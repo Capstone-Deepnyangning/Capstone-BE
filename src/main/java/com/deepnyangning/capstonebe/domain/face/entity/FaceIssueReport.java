@@ -1,6 +1,6 @@
-package com.deepnyangning.capstonebe.domain.Notification;
+package com.deepnyangning.capstonebe.domain.face.entity;
 
-import com.deepnyangning.capstonebe.domain.user.User;
+import com.deepnyangning.capstonebe.domain.user.entity.User;
 import com.deepnyangning.capstonebe.global.util.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
@@ -11,7 +11,7 @@ import lombok.*;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class Notification extends BaseEntity {
+public class FaceIssueReport extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -19,12 +19,6 @@ public class Notification extends BaseEntity {
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
-
-    @Lob
-    private String message;
-
-    @Enumerated(EnumType.STRING)
-    private NotificationType type;
 
     private boolean isRead;
 }

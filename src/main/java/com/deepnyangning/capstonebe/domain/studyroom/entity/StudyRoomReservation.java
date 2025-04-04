@@ -1,6 +1,6 @@
-package com.deepnyangning.capstonebe.domain.studyroom;
+package com.deepnyangning.capstonebe.domain.studyroom.entity;
 
-import com.deepnyangning.capstonebe.domain.user.User;
+import com.deepnyangning.capstonebe.domain.user.entity.User;
 import com.deepnyangning.capstonebe.global.util.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
@@ -35,4 +35,7 @@ public class StudyRoomReservation extends BaseEntity {
 
     @Enumerated(EnumType.STRING)
     private ReservationStatus status;
+
+    @Column(length = 500)
+    private String purpose;
 }

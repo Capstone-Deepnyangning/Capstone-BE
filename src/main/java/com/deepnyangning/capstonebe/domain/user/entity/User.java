@@ -1,5 +1,6 @@
-package com.deepnyangning.capstonebe.domain.user;
+package com.deepnyangning.capstonebe.domain.user.entity;
 
+import com.deepnyangning.capstonebe.domain.user.entity.Role;
 import com.deepnyangning.capstonebe.global.util.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
@@ -21,14 +22,8 @@ public class User extends BaseEntity {
 
     private String name;
 
-    private String phone;
-
-    private String email;
-
     @Enumerated(EnumType.STRING)
     private Role role;
-
-    private String profileImage;
 
     private boolean isActive;
 }

@@ -1,4 +1,4 @@
-package com.deepnyangning.capstonebe.domain.facedata;
+package com.deepnyangning.capstonebe.domain.face.entity;
 
 public enum TrainingMethod {
     INITIAL,

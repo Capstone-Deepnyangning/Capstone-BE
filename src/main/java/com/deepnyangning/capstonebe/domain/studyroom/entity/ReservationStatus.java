@@ -1,4 +1,4 @@
-package com.deepnyangning.capstonebe.domain.studyroom;
+package com.deepnyangning.capstonebe.domain.studyroom.entity;
 
 public enum ReservationStatus {
     CONFIRMED,
