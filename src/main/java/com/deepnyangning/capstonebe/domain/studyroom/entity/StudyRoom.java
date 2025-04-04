@@ -1,4 +1,4 @@
-package com.deepnyangning.capstonebe.domain.studyroom;
+package com.deepnyangning.capstonebe.domain.studyroom.entity;
 
 import com.deepnyangning.capstonebe.global.util.BaseEntity;
 import jakarta.persistence.Entity;
@@ -19,8 +19,6 @@ public class StudyRoom extends BaseEntity {
     private Long id;
 
     private String name;
-
-    private String location;
 
     private int minCapacity;
 

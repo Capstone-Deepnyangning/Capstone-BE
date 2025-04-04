@@ -1,6 +1,6 @@
-package com.deepnyangning.capstonebe.domain.facedata;
+package com.deepnyangning.capstonebe.domain.face.entity;
 
-import com.deepnyangning.capstonebe.domain.user.User;
+import com.deepnyangning.capstonebe.domain.user.entity.User;
 import com.deepnyangning.capstonebe.global.util.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
