@@ -11,6 +11,7 @@ public enum ErrorCode {
      * 400 BAD_REQUEST: 잘못된 요청
      */
     BAD_REQUEST(HttpStatus.BAD_REQUEST, "잘못된 요청입니다."),
+    DUPLICATE_IDENTIFIER(HttpStatus.BAD_REQUEST, "이미 존재하는 학번입니다."),
 
     /*
      * 401 UNAUTHORIZED: 인증되지 않은 사용자의 요청
