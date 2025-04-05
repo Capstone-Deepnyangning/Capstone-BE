@@ -30,6 +30,35 @@ jobs:
       - name: Grant permission for gradlew
         run: chmod +x ./gradlew
 
+      - name: Generate application-test.yml
+        run: |
+            mkdir -p src/main/resources
+            cat <<EOF > src/main/resources/application-test.yml
+            spring:
+              datasource:
+                driver-class-name: org.h2.Driver
+                url: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+                username: sa
+                password:
+            
+              jpa:
+                hibernate:
+                  ddl-auto: create
+                show-sql: true
+                database-platform: org.hibernate.dialect.H2Dialect
+            
+              data:
+                redis:
+                  host: ${{ secrets.REDIS_HOST }}
+                  port: ${{ secrets.REDIS_PORT }}
+                  password: ${{ secrets.REDIS_PASSWORD }}
+            
+            jwt:
+              secret-key: ${{ secrets.JWT_SECRET_KEY }}
+              access-exp-time: ${{ secrets.ACCESS_EXP_TIME }}
+              refresh-exp-time: ${{ secrets.REFRESH_EXP_TIME }}
+            EOF
+
       - name: Run Tests with H2
         run: ./gradlew test -Dspring.profiles.active=test
 
