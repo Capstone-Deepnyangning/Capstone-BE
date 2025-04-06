@@ -12,6 +12,7 @@ public enum ErrorCode {
      */
     BAD_REQUEST(HttpStatus.BAD_REQUEST, "잘못된 요청입니다."),
     DUPLICATE_IDENTIFIER(HttpStatus.BAD_REQUEST, "이미 존재하는 학번입니다."),
+    INVALID_ROLE(HttpStatus.BAD_REQUEST, "유효하지 않은 역할입니다."),
 
     /*
      * 401 UNAUTHORIZED: 인증되지 않은 사용자의 요청
@@ -19,6 +20,7 @@ public enum ErrorCode {
     UNAUTHORIZED(HttpStatus.UNAUTHORIZED, "인증되지 않은 사용자입니다."),
     INVALID_REFRESH_TOKEN(HttpStatus.UNAUTHORIZED, "유효하지 않은 리프레시 토큰입니다."),
     TOKEN_ALREADY_LOGOUT(HttpStatus.UNAUTHORIZED, "이미 로그아웃된 토큰입니다."),
+    TOKEN_EXPIRED(HttpStatus.UNAUTHORIZED, "토큰이 만료되었습니다."),
 
     /*
      * 403 FORBIDDEN: 권한이 없는 사용자의 요청

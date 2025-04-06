@@ -4,7 +4,10 @@ import com.deepnyangning.capstonebe.domain.user.dto.CustomUserDetails;
 import com.deepnyangning.capstonebe.domain.user.entity.User;
 import com.deepnyangning.capstonebe.domain.user.service.TokenService;
 import com.deepnyangning.capstonebe.domain.user.service.UserService;
+import com.deepnyangning.capstonebe.global.code.ErrorCode;
+import com.deepnyangning.capstonebe.global.response.ErrorResponse;
 import com.deepnyangning.capstonebe.global.util.JWTUtil;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -24,6 +27,7 @@ public class JWTFilter extends OncePerRequestFilter {
     private final JWTUtil jwtUtil;
     private final TokenService tokenService;
     private final UserService userService;
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
@@ -50,24 +54,15 @@ public class JWTFilter extends OncePerRequestFilter {
         try {
             jwtUtil.isValid(token);
         } catch (ExpiredJwtException e) {
-            // response status code
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-
-            // response body
-            PrintWriter writer = response.getWriter();
-            writer.print("token expired");
-            writer.flush();
+            // error response 설정
+            setErrorResponse(response, ErrorCode.TOKEN_EXPIRED);
             return;
         }
 
         // 블랙리스트 여부 확인
         if(tokenService.isBlacklisted(token)){
-            // response body
-            PrintWriter writer = response.getWriter();
-            writer.print("token blacklisted");
-
-            // response status code
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            // error response 설정
+            setErrorResponse(response, ErrorCode.TOKEN_ALREADY_LOGOUT);
             return;
         }
 
@@ -82,5 +77,17 @@ public class JWTFilter extends OncePerRequestFilter {
 
         // 다음 필터로 넘기기
         filterChain.doFilter(request, response);
+    }
+
+    private void setErrorResponse(HttpServletResponse response, ErrorCode errorCode) throws IOException {
+        ErrorResponse errorResponse = ErrorResponse.builder()
+                .code(errorCode.getHttpStatus().value())
+                .error(errorCode.getHttpStatus().name())
+                .message(errorCode.getMessage())
+                .build();
+
+        response.setStatus(errorCode.getHttpStatus().value());
+        response.setContentType("application/json;charset=UTF-8");
+        response.getWriter().write(objectMapper.writeValueAsString(errorResponse));
     }
 }

@@ -39,7 +39,7 @@ public class JWTUtil {
      * @return
      */
     public String createAccessToken(CustomUserDetails customUserDetails) {
-        return createToken(ACCESS_CATEGORY, customUserDetails.getUsername(), ACCESS_TOKEN_EXPIRATION);
+        return createToken(ACCESS_CATEGORY, customUserDetails.getUsername(), customUserDetails.getRole(), ACCESS_TOKEN_EXPIRATION);
     }
 
     /**
@@ -49,20 +49,23 @@ public class JWTUtil {
      * @return
      */
     public String createRefreshToken(CustomUserDetails customUserDetails) {
-        return createToken(REFRESH_CATEGORY, customUserDetails.getUsername(), REFRESH_TOKEN_EXPIRATION);
+        return createToken(REFRESH_CATEGORY, customUserDetails.getUsername(), customUserDetails.getRole(), REFRESH_TOKEN_EXPIRATION);
     }
 
     /**
      * JWT 토큰 생성 메서드
      *
-     * @param identifier        학번
+     * @param category          토큰 카테고리
+     * @param identifier        식별자
+     * @param role              역할
      * @param expiredMs         만료 시간
      * @return 생성된 JWT 토큰
      */
-    private String createToken(String category, String identifier, Long expiredMs){
+    private String createToken(String category, String identifier, String role, Long expiredMs){
         return Jwts.builder()
                 .subject(identifier)
                 .claim("category", category)
+                .claim("role", "ROLE_"+role)
                 .issuedAt(new Date(System.currentTimeMillis()))
                 .expiration(new Date(System.currentTimeMillis() + expiredMs))
                 .signWith(getSignKey())
@@ -127,6 +130,21 @@ public class JWTUtil {
                 .parseSignedClaims(token)
                 .getPayload()
                 .get("category", String.class);
+    }
+
+    /**
+     * JWT 토큰에서 role 추출
+     *
+     * @param token JWT 토큰
+     * @return 추출된 role
+     */
+    public String getRole(String token) {
+        return Jwts.parser()
+                .verifyWith(getSignKey())
+                .build()
+                .parseSignedClaims(token)
+                .getPayload()
+                .get("role", String.class);
     }
 
     /**

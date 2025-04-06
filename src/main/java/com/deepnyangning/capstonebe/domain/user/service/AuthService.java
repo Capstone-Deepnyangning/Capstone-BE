@@ -33,11 +33,18 @@ public class AuthService {
             throw new CustomException(ErrorCode.DUPLICATE_IDENTIFIER);
         }
 
+        Role role;
+        try {
+            role = Role.valueOf(request.getRole().toUpperCase());
+        } catch (IllegalArgumentException e) {
+            throw new CustomException(ErrorCode.INVALID_ROLE);
+        }
+
         User user = User.builder()
                 .identifier(request.getIdentifier())
                 .password(passwordEncoder.encode(request.getPassword()))
                 .name(request.getName())
-                .role(Role.USER)
+                .role(role)
                 .isActive(true)
                 .build();
         userService.saveUser(user);

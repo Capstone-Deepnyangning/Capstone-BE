@@ -6,4 +6,5 @@ import lombok.*;
 public class LoginRequest {
     private String identifier;
     private String password;
+    private String role;
 }
