@@ -80,6 +80,7 @@ public class SecurityConfig {
                                 "/actuator/health",
                                 "/auth/login", "/auth/signup"
                                 ).permitAll()
+                        .requestMatchers("/api/admin/**").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )
 
