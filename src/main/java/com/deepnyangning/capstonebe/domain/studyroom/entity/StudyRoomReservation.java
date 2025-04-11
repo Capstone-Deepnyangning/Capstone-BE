@@ -7,6 +7,8 @@ import lombok.*;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -38,4 +40,8 @@ public class StudyRoomReservation extends BaseEntity {
 
     @Column(length = 500)
     private String purpose;
+
+    @OneToMany(mappedBy = "reservation", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
+    private List<StudyRoomParticipant> participants = new ArrayList<>();
 }

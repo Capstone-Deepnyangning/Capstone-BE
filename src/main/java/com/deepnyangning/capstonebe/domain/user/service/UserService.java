@@ -17,11 +17,20 @@ public class UserService {
                 .orElseThrow(()-> new CustomException(ErrorCode.USER_NOT_FOUND));
     }
 
+    public User findById(Long id){
+        return userRepository.findById(id)
+                .orElseThrow(()-> new CustomException(ErrorCode.USER_NOT_FOUND));
+    }
+
     public boolean existsByIdentifier(String identifier){
         return userRepository.existsByIdentifier(identifier);
     }
 
     public void saveUser(User user){
         userRepository.save(user);
+    }
+
+    public boolean existsByIdentifierAndName(String identifier, String name) {
+        return userRepository.existsByIdentifierAndName(identifier, name);
     }
 }
