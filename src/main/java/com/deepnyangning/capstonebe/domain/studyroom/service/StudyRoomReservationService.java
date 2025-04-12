@@ -19,6 +19,8 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.DayOfWeek;
+import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
@@ -32,10 +34,43 @@ public class StudyRoomReservationService {
     private final UserService userService;
     private final StudyRoomParticipantService participantService;
 
+    public void validateReservationDuration(LocalTime startTime, LocalTime endTime){
+        long minutes = Duration.between(startTime, endTime).toMinutes();
+        if(minutes != 60 && minutes != 120) {
+            throw new CustomException(ErrorCode.INVALID_RESERVATION_DURATION);
+        }
+    }
+
+    public void validateReservationTimeRange(LocalDate date, LocalTime startTime, LocalTime endTime){
+        DayOfWeek dayOfWeek = date.getDayOfWeek();
+        LocalTime openTime = LocalTime.of(10, 0);
+        LocalTime closeTime = (dayOfWeek == DayOfWeek.SATURDAY) ? LocalTime.of(16, 0) : LocalTime.of(21, 0);
+
+        if(startTime.isBefore(openTime) || endTime.isAfter(closeTime)){
+            throw new CustomException(ErrorCode.INVALID_RESERVATION_TIME);
+        }
+    }
+
+    public void checkTimeConflict(Long studyRoomId, LocalDate date, LocalTime startTime, LocalTime endTime){
+        boolean exists = reservationRepository.existsByStudyRoomIdAndDateAndTime(studyRoomId, date, startTime, endTime, ReservationStatus.CONFIRMED);
+        if(exists){
+            throw new CustomException(ErrorCode.DUPLICATE_RESERVATION);
+        }
+    }
+
     @Transactional
     public ReservationResponse saveReservation(ReservationRequest reservationRequest){
+        LocalDate date = reservationRequest.getDate();
+        LocalTime startTime = reservationRequest.getStartTime();
+        LocalTime endTime = reservationRequest.getEndTime();
+        Long studyRoomId = reservationRequest.getStudyRoomId();
+
+        validateReservationDuration(startTime, endTime);
+        validateReservationTimeRange(date, startTime, endTime);
+        checkTimeConflict(studyRoomId, date, startTime, endTime);
+
         StudyRoomReservation reservation = reservationMapper.toEntity(reservationRequest);
-        reservation.setStudyRoom(studyRoomService.findStudyRoomById(reservationRequest.getStudyRoomId()));
+        reservation.setStudyRoom(studyRoomService.findStudyRoomById(studyRoomId));
         reservation.setUser(userService.findById(reservationRequest.getUserId()));
         reservation.setStatus(ReservationStatus.CONFIRMED);
         participantService.saveParticipants(reservationRequest.getParticipants(), reservation);
