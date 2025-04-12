@@ -18,6 +18,6 @@ public interface StudyRoomRepository extends JpaRepository<StudyRoom, Long> {
     @Query("SELECT sr FROM StudyRoom sr WHERE sr.id NOT IN (" +
             "SELECT r.studyRoom.id FROM StudyRoomReservation r " +
             "WHERE r.date = :date AND r.endTime >= :startTime AND r.startTime <= :endTime " +
-            "AND r.status != 'CANCELLED')")
+            "AND r.status != 'CANCELED')")
     Page<StudyRoom> findAvailableStudyRooms(@Param("date") LocalDate date, @Param("startTime") LocalTime startTime, @Param("endTime") LocalTime endTime, Pageable pageable);
 }

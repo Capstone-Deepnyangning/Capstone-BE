@@ -15,8 +15,13 @@ import com.deepnyangning.capstonebe.global.exception.CustomException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -80,5 +85,19 @@ public class StudyRoomReservationService {
     @Transactional
     public void cancelReservation(Long id){
         updateReservationStatus(id, "CANCELED");
+    }
+
+    @Scheduled(cron = "0 0 * * * *")
+    public void updateCompletedReservations(){
+        LocalDate today = LocalDate.now();
+        LocalTime now = LocalTime.now();
+
+        List<StudyRoomReservation> reservations = reservationRepository.findByDateAndEndTimeLessThanEqualAndStatus(today, now, ReservationStatus.CONFIRMED);
+
+        for(StudyRoomReservation reservation:reservations){
+            reservation.setStatus(ReservationStatus.COMPLETED);
+        }
+
+        reservationRepository.saveAll(reservations);
     }
 }
