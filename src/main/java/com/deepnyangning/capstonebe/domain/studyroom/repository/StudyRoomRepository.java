@@ -13,11 +13,22 @@ import java.time.LocalTime;
 
 @Repository
 public interface StudyRoomRepository extends JpaRepository<StudyRoom, Long> {
-    StudyRoom findByName(String name);
+
+    @Query(value = "SELECT * FROM study_room sr " +
+            "WHERE sr.id NOT IN (" +
+            "SELECT r.study_room_id FROM study_room_reservation r " +
+            "WHERE r.date = :date " +
+            "AND r.status != 'CANCELED' " +
+            "GROUP BY r.study_room_id " +
+            "HAVING SUM(TIMESTAMPDIFF(MINUTE, r.start_time, r.end_time)) >= :availableMinutes" +
+            ")", nativeQuery = true)
+    Page<StudyRoom> findAvailableStudyRoomsByDate(@Param("date") LocalDate date,
+                                                  @Param("availableMinutes") int availableMinutes,
+                                                  Pageable pageable);
 
     @Query("SELECT sr FROM StudyRoom sr WHERE sr.id NOT IN (" +
             "SELECT r.studyRoom.id FROM StudyRoomReservation r " +
-            "WHERE r.date = :date AND r.endTime >= :startTime AND r.startTime <= :endTime " +
-            "AND r.status != 'CANCELLED')")
+            "WHERE r.date = :date AND r.endTime > :startTime AND r.startTime < :endTime " +
+            "AND r.status != 'CANCELED')")
     Page<StudyRoom> findAvailableStudyRooms(@Param("date") LocalDate date, @Param("startTime") LocalTime startTime, @Param("endTime") LocalTime endTime, Pageable pageable);
 }

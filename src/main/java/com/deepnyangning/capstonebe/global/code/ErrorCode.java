@@ -13,6 +13,9 @@ public enum ErrorCode {
     BAD_REQUEST(HttpStatus.BAD_REQUEST, "잘못된 요청입니다."),
     DUPLICATE_IDENTIFIER(HttpStatus.BAD_REQUEST, "이미 존재하는 학번입니다."),
     INVALID_ROLE(HttpStatus.BAD_REQUEST, "유효하지 않은 역할입니다."),
+    INVALID_RESERVATION_TIME(HttpStatus.BAD_REQUEST, "예약 가능 시간이 아닙니다."),
+    INVALID_RESERVATION_DURATION(HttpStatus.BAD_REQUEST, "예약은 1시간 또는 2시간 단위로만 가능합니다."),
+    DUPLICATE_RESERVATION(HttpStatus.BAD_REQUEST, "해당 시간대에 이미 예약이 존재합니다."),
 
     /*
      * 401 UNAUTHORIZED: 인증되지 않은 사용자의 요청
