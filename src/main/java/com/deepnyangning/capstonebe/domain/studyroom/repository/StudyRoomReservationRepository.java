@@ -22,14 +22,13 @@ public interface StudyRoomReservationRepository extends JpaRepository<StudyRoomR
     Page<StudyRoomReservation> findStudyRoomReservationsByUser(User user, Pageable pageable);
     List<StudyRoomReservation> findByDateAndEndTimeLessThanEqualAndStatus(LocalDate date, LocalTime time, ReservationStatus status);
 
-    @Query("SELECT CASE WHEN COUNT(r) > 0 THEN true ELSE false END " +
-            "FROM StudyRoomReservation r " +
+    @Query("SELECT r FROM StudyRoomReservation r " +
             "WHERE r.studyRoom.id = :studyRoomId AND r.date = :date " +
             "AND r.status = :status " +
             "AND r.endTime > :startTime AND r.startTime < :endTime")
-    boolean existsByStudyRoomIdAndDateAndTime(@Param("studyRoomId") Long studyRoomId,
-                                              @Param("date") LocalDate date,
-                                              @Param("startTime") LocalTime startTime,
-                                              @Param("endTime") LocalTime endTime,
-                                              @Param("status") ReservationStatus status);
+    List<StudyRoomReservation> findConflictReservations(@Param("studyRoomId") Long studyRoomId,
+                                                        @Param("date") LocalDate date,
+                                                        @Param("startTime") LocalTime startTime,
+                                                        @Param("endTime") LocalTime endTime,
+                                                        @Param("status") ReservationStatus status);
 }

@@ -52,8 +52,8 @@ public class StudyRoomReservationService {
     }
 
     public void checkTimeConflict(Long studyRoomId, LocalDate date, LocalTime startTime, LocalTime endTime){
-        boolean exists = reservationRepository.existsByStudyRoomIdAndDateAndTime(studyRoomId, date, startTime, endTime, ReservationStatus.CONFIRMED);
-        if(exists){
+        List<StudyRoomReservation> existedReservations =  reservationRepository.findConflictReservations(studyRoomId, date, startTime, endTime, ReservationStatus.CONFIRMED);
+        if(!existedReservations.isEmpty()){
             throw new CustomException(ErrorCode.DUPLICATE_RESERVATION);
         }
     }
