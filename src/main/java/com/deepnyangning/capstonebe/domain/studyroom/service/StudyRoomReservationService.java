@@ -79,6 +79,6 @@ public class StudyRoomReservationService {
 
     @Transactional
     public void cancelReservation(Long id){
-        updateReservationStatus(id, "CANCELLED");
+        updateReservationStatus(id, "CANCELED");
     }
 }
