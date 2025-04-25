@@ -7,6 +7,7 @@ import com.deepnyangning.capstonebe.domain.user.dto.SignupRequest;
 import com.deepnyangning.capstonebe.domain.user.service.AuthService;
 import com.deepnyangning.capstonebe.global.response.ApiResponse;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,14 +21,14 @@ public class AuthController {
     private final AuthService authService;
 
     @PostMapping("/signup")
-    public ResponseEntity<ApiResponse<Void>> signup(@RequestBody SignupRequest request){
+    public ResponseEntity<ApiResponse<Void>> signup(@Valid @RequestBody SignupRequest request){
         authService.signup(request);
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(ApiResponse.<Void>builder().success(true).code(201).message("회원가입에 성공했습니다.").build());
     }
 
     @PostMapping("/login")
-    public ResponseEntity<ApiResponse<LoginResponse>> login(@RequestBody LoginRequest request){
+    public ResponseEntity<ApiResponse<LoginResponse>> login(@Valid @RequestBody LoginRequest request){
         LoginResponse response = authService.login(request);
         return ResponseEntity.ok()
                 .body(ApiResponse.<LoginResponse>builder().result(response).success(true).code(200).message("로그인에 성공했습니다.").build());
