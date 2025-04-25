@@ -11,6 +11,7 @@ import com.deepnyangning.capstonebe.global.exception.CustomException;
 import com.deepnyangning.capstonebe.global.util.JWTUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -51,22 +52,26 @@ public class AuthService {
     }
 
     public LoginResponse login(LoginRequest request){
-        // 인증 시도
-        Authentication authentication = authenticationManager.authenticate(
-            new UsernamePasswordAuthenticationToken(request.getIdentifier(), request.getPassword())
-        );
+        try{
+            // 인증 시도
+            Authentication authentication = authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(request.getIdentifier(), request.getPassword())
+            );
 
-        // 인증 성공 시 사용자 정보 가져오기
-        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+            // 인증 성공 시 사용자 정보 가져오기
+            CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
 
-        // 토큰 생성
-        String accessToken = jwtUtil.createAccessToken(userDetails);
-        String refreshToken = jwtUtil.createRefreshToken(userDetails);
+            // 토큰 생성
+            String accessToken = jwtUtil.createAccessToken(userDetails);
+            String refreshToken = jwtUtil.createRefreshToken(userDetails);
 
-        // Redis에 RefreshToken 저장
-        tokenService.saveRefreshToken(userDetails.getUsername(), refreshToken);
+            // Redis에 RefreshToken 저장
+            tokenService.saveRefreshToken(userDetails.getUsername(), refreshToken);
 
-        return new LoginResponse(accessToken, refreshToken);
+            return new LoginResponse(accessToken, refreshToken);
+        } catch (BadCredentialsException e){
+            throw new CustomException(ErrorCode.INVALID_CREDENTIALS);
+        }
     }
 
     public LoginResponse reissue(String refreshToken){
