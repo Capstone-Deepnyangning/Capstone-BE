@@ -18,6 +18,7 @@ public enum ErrorCode {
     DUPLICATE_RESERVATION(HttpStatus.BAD_REQUEST, "해당 시간대에 이미 예약이 존재합니다."),
     MISSING_SIMILARITY(HttpStatus.BAD_REQUEST, "안면 인식 인증을 위해 유사도 값이 필요합니다."),
     INSUFFICIENT_SIMILARITY(HttpStatus.BAD_REQUEST, "안면 인식 유사도가 충분하지 않습니다."),
+    INVALID_QR_CODE(HttpStatus.BAD_REQUEST, "유효하지 않은 QR 코드입니다."),
 
     /*
      * 401 UNAUTHORIZED: 인증되지 않은 사용자의 요청
@@ -49,8 +50,12 @@ public enum ErrorCode {
     /*
      * 500 INTERNAL_SERVER_ERROR: 내부 서버 오류
      */
-    INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "서버 내부 오류가 발생했습니다.");
+    INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "서버 내부 오류가 발생했습니다."),
 
+    /*
+     * 503 SERVICE_UNAVAILABLE: 서비스 이용 불가
+     */
+    REDIS_OPERATION_FAILED(HttpStatus.SERVICE_UNAVAILABLE, "Redis 작업에 실패했습니다.");
 
     private final HttpStatus httpStatus;
     private final String message;
