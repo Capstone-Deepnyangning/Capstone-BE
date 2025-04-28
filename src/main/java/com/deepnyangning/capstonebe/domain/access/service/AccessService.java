@@ -28,7 +28,7 @@ public class AccessService {
         try{
             identifier = qrService.validateQr(request.getQrCode());
         } catch (CustomException e){
-            logService.saveFailLog(AuthMethod.QR, null, e.getErrorCode());
+            logService.saveFailLog(AuthMethod.QR, 0.0f, e.getErrorCode());
             throw e;
         }
 
@@ -36,11 +36,11 @@ public class AccessService {
         try{
             user = userService.findByIdentifier(identifier);
         } catch (CustomException e){
-            logService.saveFailLog(AuthMethod.QR, null, e.getErrorCode());
+            logService.saveFailLog(AuthMethod.QR, 0.0f, e.getErrorCode());
             throw e;
         }
 
-        logService.saveAccessLog(user, AuthMethod.QR, request.getAccessType(), null);
+        logService.saveAccessLog(user, AuthMethod.QR, request.getAccessType(), 0.0f);
         return AccessResponse.builder().identifier(identifier).name(user.getName()).authMethod(AuthMethod.QR).accessType(request.getAccessType()).build();
     }
 

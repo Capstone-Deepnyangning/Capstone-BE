@@ -3,12 +3,14 @@ package com.deepnyangning.capstonebe.domain.qr.service;
 import com.deepnyangning.capstonebe.global.code.ErrorCode;
 import com.deepnyangning.capstonebe.global.exception.CustomException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.time.Duration;
 import java.util.UUID;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class QRService {
@@ -24,11 +26,19 @@ public class QRService {
     }
 
     public String validateQr(String qrCode){
-        String storedIdentifier = redisTemplate.opsForValue().get(qrCode);
-        if(storedIdentifier == null){
-            throw new CustomException(ErrorCode.INVALID_QR_CODE);
+        try{
+            String storedIdentifier = redisTemplate.opsForValue().get(qrCode);
+            if(storedIdentifier == null){
+                log.warn("QR 코드가 유효하지 않습니다: {}", qrCode);
+                throw new CustomException(ErrorCode.INVALID_QR_CODE);
+            }
+            redisTemplate.delete(qrCode);
+            return storedIdentifier;
+        } catch (CustomException e){
+            throw e;
+        } catch (Exception e) {
+            log.error("Redis 작업에 실패했습니다. QR code: {}, error: {}", qrCode, e.getMessage(), e);
+            throw new CustomException(ErrorCode.REDIS_OPERATION_FAILED);
         }
-        redisTemplate.delete(qrCode);
-        return storedIdentifier;
     }
 }
