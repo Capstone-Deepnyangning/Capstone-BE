@@ -22,7 +22,7 @@ public class FailLog {
 
     private LocalDateTime accessTime;
 
-    private float similarity;
+    private Float similarity;
 
     @PrePersist
     protected void onCreate(){

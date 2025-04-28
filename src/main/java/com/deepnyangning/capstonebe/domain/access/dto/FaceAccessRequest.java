@@ -9,9 +9,8 @@ import lombok.*;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class AccessRequest {
+public class FaceAccessRequest {
     private String identifier;
-    private AuthMethod authMethod;
     private AccessType accessType;
     private Float similarity;
 }
