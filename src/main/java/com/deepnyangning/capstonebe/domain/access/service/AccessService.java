@@ -49,15 +49,6 @@ public class AccessService {
         String identifier = request.getIdentifier();
         User user = null;
 
-        if(identifier == null){
-            logService.saveFailLog(AuthMethod.FACE, request.getSimilarity(), ErrorCode.BAD_REQUEST);
-            throw new CustomException(ErrorCode.BAD_REQUEST);
-        }
-
-        if(request.getSimilarity() == null){
-            logService.saveFailLog(AuthMethod.FACE, null, ErrorCode.MISSING_SIMILARITY);
-            throw new CustomException(ErrorCode.MISSING_SIMILARITY);
-        }
         if(request.getSimilarity() < 0.95){ // 임계값 추후 수정하기
             logService.saveFailLog(AuthMethod.FACE, request.getSimilarity(), ErrorCode.INSUFFICIENT_SIMILARITY);
             throw new CustomException(ErrorCode.INSUFFICIENT_SIMILARITY);
