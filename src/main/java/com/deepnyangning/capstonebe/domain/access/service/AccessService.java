@@ -26,7 +26,7 @@ public class AccessService {
     public AccessResponse processQrAccess(QrAccessRequest request){
         String identifier;
         try{
-            identifier = qrService.validateQrCode(request.getQrCode());
+            identifier = qrService.validateQr(request.getQrCode());
         } catch (CustomException e){
             logService.saveFailLog(AuthMethod.QR, null, e.getErrorCode());
             throw e;

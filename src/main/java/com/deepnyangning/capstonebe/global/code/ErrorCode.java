@@ -18,6 +18,7 @@ public enum ErrorCode {
     DUPLICATE_RESERVATION(HttpStatus.BAD_REQUEST, "해당 시간대에 이미 예약이 존재합니다."),
     MISSING_SIMILARITY(HttpStatus.BAD_REQUEST, "안면 인식 인증을 위해 유사도 값이 필요합니다."),
     INSUFFICIENT_SIMILARITY(HttpStatus.BAD_REQUEST, "안면 인식 유사도가 충분하지 않습니다."),
+    INVALID_QR_CODE(HttpStatus.BAD_REQUEST, "유효하지 않은 QR 코드입니다."),
 
     /*
      * 401 UNAUTHORIZED: 인증되지 않은 사용자의 요청
