@@ -19,6 +19,7 @@ public enum ErrorCode {
     MISSING_SIMILARITY(HttpStatus.BAD_REQUEST, "안면 인식 인증을 위해 유사도 값이 필요합니다."),
     INSUFFICIENT_SIMILARITY(HttpStatus.BAD_REQUEST, "안면 인식 유사도가 충분하지 않습니다."),
     INVALID_QR_CODE(HttpStatus.BAD_REQUEST, "유효하지 않은 QR 코드입니다."),
+    SAME_AS_OLD_PASSWORD(HttpStatus.BAD_REQUEST, "새 비밀번호는 기존 비밀번호와 다르게 설정해야 합니다."),
 
     /*
      * 401 UNAUTHORIZED: 인증되지 않은 사용자의 요청
@@ -28,6 +29,7 @@ public enum ErrorCode {
     TOKEN_ALREADY_LOGOUT(HttpStatus.UNAUTHORIZED, "이미 로그아웃된 토큰입니다."),
     TOKEN_EXPIRED(HttpStatus.UNAUTHORIZED, "토큰이 만료되었습니다."),
     INVALID_CREDENTIALS(HttpStatus.UNAUTHORIZED, "아이디 또는 비밀번호가 올바르지 않습니다."),
+    INCORRECT_CURRENT_PASSWORD(HttpStatus.UNAUTHORIZED, "현재 비밀번호가 일치하지 않습니다."),
 
     /*
      * 403 FORBIDDEN: 권한이 없는 사용자의 요청

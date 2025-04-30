@@ -25,5 +25,6 @@ public class User extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private Role role;
 
-    private boolean isActive;
+    @Builder.Default
+    private boolean isActive = true;
 }
