@@ -1,9 +1,6 @@
 package com.deepnyangning.capstonebe.global.filter;
 
-import com.deepnyangning.capstonebe.domain.user.dto.CustomUserDetails;
-import com.deepnyangning.capstonebe.domain.user.entity.User;
 import com.deepnyangning.capstonebe.domain.user.service.TokenService;
-import com.deepnyangning.capstonebe.domain.user.service.UserService;
 import com.deepnyangning.capstonebe.global.code.ErrorCode;
 import com.deepnyangning.capstonebe.global.response.ErrorResponse;
 import com.deepnyangning.capstonebe.global.util.JWTUtil;
@@ -17,6 +14,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
@@ -26,7 +25,7 @@ import java.io.PrintWriter;
 public class JWTFilter extends OncePerRequestFilter {
     private final JWTUtil jwtUtil;
     private final TokenService tokenService;
-    private final UserService userService;
+    private final UserDetailsService userDetailsService;
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Override
@@ -68,8 +67,7 @@ public class JWTFilter extends OncePerRequestFilter {
 
         // 사용자 정보 추출
         String identifier = jwtUtil.getSubject(token);
-        User user = userService.findByIdentifier(identifier);
-        CustomUserDetails userDetails = new CustomUserDetails(user);
+        UserDetails userDetails = userDetailsService.loadUserByUsername(identifier);
         Authentication authToken = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
 
         // SecurityContext에 등록

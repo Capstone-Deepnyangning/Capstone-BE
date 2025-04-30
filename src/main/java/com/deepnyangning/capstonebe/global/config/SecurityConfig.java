@@ -1,7 +1,7 @@
 package com.deepnyangning.capstonebe.global.config;
 
+import com.deepnyangning.capstonebe.domain.user.service.CustomUserDetailsService;
 import com.deepnyangning.capstonebe.domain.user.service.TokenService;
-import com.deepnyangning.capstonebe.domain.user.service.UserService;
 import com.deepnyangning.capstonebe.global.filter.JWTFilter;
 import com.deepnyangning.capstonebe.global.util.JWTUtil;
 import jakarta.servlet.http.HttpServletRequest;
@@ -28,7 +28,7 @@ import java.util.Collections;
 public class SecurityConfig {
     private final JWTUtil jwtUtil;
     private final TokenService tokenService;
-    private final UserService userService;
+    private final CustomUserDetailsService customUserDetailsService;
 
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
@@ -85,7 +85,7 @@ public class SecurityConfig {
                 )
 
                 // filter 추가
-                .addFilterBefore(new JWTFilter(jwtUtil, tokenService, userService), UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(new JWTFilter(jwtUtil, tokenService, customUserDetailsService), UsernamePasswordAuthenticationFilter.class)
 
                  // 세션 설정
                 .sessionManagement(session -> session
