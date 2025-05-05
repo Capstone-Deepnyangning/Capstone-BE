@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -29,7 +30,7 @@ public class LogController {
                                                                               @RequestParam(required = false) AuthMethod authMethod,
                                                                               @RequestParam(defaultValue = "0") int page,
                                                                               @RequestParam(defaultValue = "7") int size){
-        Pageable pageable = PageRequest.of(page, size);
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "accessTime"));
         Page<AccessLogResponse> response = logService.findAccessLogs(startTime, endTime, identifier, name, authMethod, pageable);
         return ResponseEntity.status(HttpStatus.OK)
                 .body(ApiResponse.<Page<AccessLogResponse>>builder().result(response).success(true).code(200).message("출입 로그 목록을 성공적으로 조회했습니다.").build());
@@ -48,7 +49,7 @@ public class LogController {
                                                                           @RequestParam(required = false) AuthMethod authMethod,
                                                                           @RequestParam(defaultValue = "0") int page,
                                                                           @RequestParam(defaultValue = "7") int size){
-        Pageable pageable = PageRequest.of(page, size);
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "accessTime"));
         Page<FailLogResponse> response = logService.findFailLogs(startTime, endTime, authMethod, pageable);
         return ResponseEntity.status(HttpStatus.OK)
                 .body(ApiResponse.<Page<FailLogResponse>>builder().result(response).success(true).code(200).message("인증 실패 로그 목록을 성공적으로 조회했습니다.").build());
