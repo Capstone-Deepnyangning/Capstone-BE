@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -36,7 +37,7 @@ public class StudyRoomController {
                                                                                        @RequestParam(required = false) @DateTimeFormat(pattern = "HH:mm") LocalTime endTime,
                                                                                        @RequestParam(defaultValue = "0") int page,
                                                                                        @RequestParam(defaultValue = "7") int size){
-        Pageable pageable = PageRequest.of(page, size);
+        Pageable pageable = PageRequest.of(page, size, Sort.Direction.ASC, "name");
         Page<StudyRoomResponse> studyRoomResponses = studyRoomService.findAvailableStudyRooms(date, startTime, endTime, pageable);
         return ResponseEntity.status(HttpStatus.OK)
                 .body(ApiResponse.<Page<StudyRoomResponse>>builder().result(studyRoomResponses).success(true).code(200).message("스터디룸 조회에 성공했습니다.").build());

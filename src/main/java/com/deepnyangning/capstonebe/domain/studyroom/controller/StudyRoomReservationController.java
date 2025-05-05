@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -73,7 +74,7 @@ public class StudyRoomReservationController {
     public ResponseEntity<ApiResponse<Page<ReservationResponse>>> getStudyRoomReservations(@RequestParam(required = false) String name,
                                                                                            @RequestParam(defaultValue = "0") int page,
                                                                                            @RequestParam(defaultValue = "7") int size){
-        Pageable pageable = PageRequest.of(page, size);
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Order.desc("date"), Sort.Order.desc("startTime")));
         Page<ReservationResponse> reservationResponses = reservationService.findReservationsByStudyRoomName(name, pageable);
         return ResponseEntity.status(HttpStatus.OK)
                 .body(ApiResponse.<Page<ReservationResponse>>builder().result(reservationResponses).success(true).code(200).message("스터디룸 예약 전체 조회에 성공했습니다.").build());
