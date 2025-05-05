@@ -9,13 +9,7 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 public class UserResponse {
-    private Long id;
-
     private String identifier;
 
     private String name;
-
-    private Role role;
-
-    private boolean active;
 }
