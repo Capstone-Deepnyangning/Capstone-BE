@@ -1,4 +1,4 @@
-package com.deepnyangning.capstonebe.domain.user.dto;
+package com.deepnyangning.capstonebe.domain.access.dto;
 
 import com.deepnyangning.capstonebe.domain.user.entity.Role;
 import lombok.*;
@@ -8,8 +8,12 @@ import lombok.*;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class UserResponse {
+public class AccessLogUserInfo {
     private String identifier;
 
     private String name;
+
+    private Role role;
+
+    private boolean active;
 }
