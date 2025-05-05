@@ -44,6 +44,7 @@ public enum ErrorCode {
     STUDY_ROOM_NOT_FOUND(HttpStatus.NOT_FOUND, "스터디룸을 찾을 수 없습니다."),
     RESERVATION_NOT_FOUND(HttpStatus.NOT_FOUND, "스터디룸 예약을 찾을 수 없습니다."),
     FACE_ISSUE_REPORT_NOT_FOUND(HttpStatus.NOT_FOUND, "안면 인식 문제 신고 데이터를 찾을 수 없습니다."),
+    ACCESS_LOG_NOT_FOUND(HttpStatus.NOT_FOUND, "출입 로그를 찾을 수 없습니다."),
 
     /*
      * 405 METHOD_NOT_ALLOWED: 허용되지 않은 Request Method 호출
