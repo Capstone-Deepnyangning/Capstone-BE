@@ -4,6 +4,7 @@ import com.deepnyangning.capstonebe.domain.studyroom.dto.StudyRoomResponse;
 import com.deepnyangning.capstonebe.domain.studyroom.mapper.StudyRoomMapper;
 import com.deepnyangning.capstonebe.domain.studyroom.service.StudyRoomService;
 import com.deepnyangning.capstonebe.global.response.ApiResponse;
+import com.deepnyangning.capstonebe.global.response.CursorPage;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -32,14 +34,13 @@ public class StudyRoomController {
     }
 
     @GetMapping("/studyrooms")
-    public ResponseEntity<ApiResponse<Page<StudyRoomResponse>>> getAvailableStudyRooms(@RequestParam(required = false) LocalDate date,
+    public ResponseEntity<ApiResponse<CursorPage<StudyRoomResponse>>> getAvailableStudyRooms(@RequestParam(required = false) LocalDate date,
                                                                                        @RequestParam(required = false) @DateTimeFormat(pattern = "HH:mm") LocalTime startTime,
                                                                                        @RequestParam(required = false) @DateTimeFormat(pattern = "HH:mm") LocalTime endTime,
-                                                                                       @RequestParam(defaultValue = "0") int page,
+                                                                                       @RequestParam(required = false) String cursorName,
                                                                                        @RequestParam(defaultValue = "7") int size){
-        Pageable pageable = PageRequest.of(page, size, Sort.Direction.ASC, "name");
-        Page<StudyRoomResponse> studyRoomResponses = studyRoomService.findAvailableStudyRooms(date, startTime, endTime, pageable);
+        List<StudyRoomResponse> response = studyRoomService.findAvailableStudyRooms(date, startTime, endTime, cursorName, size);
         return ResponseEntity.status(HttpStatus.OK)
-                .body(ApiResponse.<Page<StudyRoomResponse>>builder().result(studyRoomResponses).success(true).code(200).message("스터디룸 조회에 성공했습니다.").build());
+                .body(ApiResponse.<CursorPage<StudyRoomResponse>>builder().result(CursorPage.of(response, size)).success(true).code(200).message("스터디룸 조회에 성공했습니다.").build());
     }
 }

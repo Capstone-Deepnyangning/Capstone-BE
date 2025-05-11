@@ -7,14 +7,20 @@ import com.deepnyangning.capstonebe.domain.studyroom.dto.ReservationUpdate;
 import com.deepnyangning.capstonebe.domain.studyroom.service.StudyRoomParticipantService;
 import com.deepnyangning.capstonebe.domain.studyroom.service.StudyRoomReservationService;
 import com.deepnyangning.capstonebe.global.response.ApiResponse;
+import com.deepnyangning.capstonebe.global.response.CursorPage;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.List;
 
 
 @RestController
@@ -40,13 +46,12 @@ public class StudyRoomReservationController {
     }
 
     @GetMapping("/studyrooms/reservations/users/{userId}")
-    public ResponseEntity<ApiResponse<Page<ReservationResponse>>> getStudyRoomReservationsByUser(@PathVariable Long userId,
-                                                                                                 @RequestParam(defaultValue = "0") int page,
-                                                                                                 @RequestParam(defaultValue = "7") int size){
-        Pageable pageable = PageRequest.of(page, size);
-        Page<ReservationResponse> reservationResponses = reservationService.findReservationsByUser(userId, pageable);
+    public ResponseEntity<ApiResponse<CursorPage<ReservationResponse>>> getStudyRoomReservationsByUser(@PathVariable Long userId,
+                                                                                                       @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate cursorDate,
+                                                                                                       @RequestParam(defaultValue = "7") int size){
+        List<ReservationResponse> response = reservationService.findReservationsByUser(userId, cursorDate, size);
         return ResponseEntity.status(HttpStatus.OK)
-                .body(ApiResponse.<Page<ReservationResponse>>builder().result(reservationResponses).success(true).code(200).message("사용자별 스터디룸 예약 조회에 성공했습니다.").build());
+                .body(ApiResponse.<CursorPage<ReservationResponse>>builder().result(CursorPage.of(response, size)).success(true).code(200).message("사용자별 스터디룸 예약 조회에 성공했습니다.").build());
     }
 
     @GetMapping("/studyrooms/reservations/{reservationId}")
@@ -71,13 +76,13 @@ public class StudyRoomReservationController {
     }
 
     @GetMapping("/admin/studyrooms/reservations")
-    public ResponseEntity<ApiResponse<Page<ReservationResponse>>> getStudyRoomReservations(@RequestParam(required = false) String name,
-                                                                                           @RequestParam(defaultValue = "0") int page,
-                                                                                           @RequestParam(defaultValue = "7") int size){
-        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Order.desc("date"), Sort.Order.desc("startTime")));
-        Page<ReservationResponse> reservationResponses = reservationService.findReservationsByStudyRoomName(name, pageable);
+    public ResponseEntity<ApiResponse<CursorPage<ReservationResponse>>> getStudyRoomReservations(@RequestParam(required = false) String name,
+                                                                                                 @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate cursorDate,
+                                                                                                 @RequestParam(required = false) @DateTimeFormat(pattern = "HH:mm") LocalTime cursorStartTime,
+                                                                                                 @RequestParam(defaultValue = "7") int size){
+        List<ReservationResponse> response = reservationService.findReservationsByStudyRoomName(name, cursorDate, cursorStartTime, size);
         return ResponseEntity.status(HttpStatus.OK)
-                .body(ApiResponse.<Page<ReservationResponse>>builder().result(reservationResponses).success(true).code(200).message("스터디룸 예약 전체 조회에 성공했습니다.").build());
+                .body(ApiResponse.<CursorPage<ReservationResponse>>builder().result(CursorPage.of(response, size)).success(true).code(200).message("스터디룸 예약 전체 조회에 성공했습니다.").build());
     }
 
     @PutMapping("/admin/studyrooms/reservations/{reservationId}")

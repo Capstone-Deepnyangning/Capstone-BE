@@ -78,20 +78,15 @@ public class StudyRoomReservationService {
         return reservationMapper.toResponseDto(reservation);
     }
 
-    public Page<ReservationResponse> findReservationsByStudyRoomName(String name, Pageable pageable){
-        Page<StudyRoomReservation> reservations;
-        if (name == null || name.trim().isEmpty()) {
-            reservations = reservationRepository.findAll(pageable);
-        } else{
-            reservations = reservationRepository.findStudyRoomReservationsByStudyRoomName(name.toUpperCase().replace(" ", ""), pageable);
-        }
-        return reservations.map(reservationMapper::toResponseDto);
+    public List<ReservationResponse> findReservationsByStudyRoomName(String name, LocalDate cursorDate, LocalTime cursorStartTime, int size) {
+        String formattedName = (name == null || name.isBlank()) ? null : name.toUpperCase().replace(" ", "");
+        List<StudyRoomReservation> reservations = reservationRepository.findByStudyRoomName(formattedName, cursorDate, cursorStartTime, size+1);
+        return reservations.stream().map(reservationMapper::toResponseDto).toList();
     }
 
-    public Page<ReservationResponse> findReservationsByUser(Long userId, Pageable pageable){
-        User user = userService.findById(userId);
-        return reservationRepository.findStudyRoomReservationsByUser(user, pageable)
-                .map(reservationMapper::toResponseDto);
+    public List<ReservationResponse> findReservationsByUser(Long userId, LocalDate cursorDate, int size){
+        return reservationRepository.findByUser(userId, cursorDate, size+1)
+                .stream().map(reservationMapper::toResponseDto).toList();
     }
 
     public ReservationResponse findReservationById(Long id){

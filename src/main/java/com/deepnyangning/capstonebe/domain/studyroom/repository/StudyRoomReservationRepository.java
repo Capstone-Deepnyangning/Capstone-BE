@@ -19,9 +19,30 @@ import java.util.List;
 
 @Repository
 public interface StudyRoomReservationRepository extends JpaRepository<StudyRoomReservation, Long> {
-    @Query("SELECT r FROM StudyRoomReservation r WHERE REPLACE(UPPER(r.studyRoom.name), ' ', '') LIKE %:name%")
-    Page<StudyRoomReservation> findStudyRoomReservationsByStudyRoomName(@Param("name") String name, Pageable pageable);
-    Page<StudyRoomReservation> findStudyRoomReservationsByUser(User user, Pageable pageable);
+    @Query(value = """
+        SELECT r.* FROM study_room_reservation r
+        JOIN study_room sr ON r.study_room_id = sr.id
+        WHERE (:name IS NULL OR REPLACE(UPPER(sr.name), ' ', '') LIKE %:name%)
+        AND (
+            :cursorDate IS NULL
+            OR (r.date < :cursorDate OR (r.date = :cursorDate AND r.start_time < :cursorStartTime))
+        )
+        ORDER BY r.date DESC, r.start_time DESC
+        LIMIT :limit
+        """, nativeQuery = true)
+    List<StudyRoomReservation> findByStudyRoomName(@Param("name") String name,
+                                                   @Param("cursorDate") LocalDate cursorDate,
+                                                   @Param("cursorStartTime") LocalTime cursorStartTime,
+                                                   @Param("limit") int limit);
+
+    @Query(value = "SELECT r.* FROM study_room_reservation r " +
+            "WHERE r.user_id = :userId " +
+            "AND (:cursorDate IS NULL OR r.date < :cursorDate) " +
+            "ORDER BY r.date DESC " +
+            "LIMIT :limit", nativeQuery = true)
+    List<StudyRoomReservation> findByUser(@Param("userId") Long userId,
+                                                                         @Param("cursorDate") LocalDate cursorDate,
+                                                                         @Param("limit") int limit);
     List<StudyRoomReservation> findByDateAndEndTimeLessThanEqualAndStatus(LocalDate date, LocalTime time, ReservationStatus status);
 
     @Lock(LockModeType.PESSIMISTIC_WRITE)

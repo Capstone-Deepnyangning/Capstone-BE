@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.List;
 
 
 @Service
@@ -27,7 +28,8 @@ public class StudyRoomService {
                 .orElseThrow(() -> new CustomException(ErrorCode.STUDY_ROOM_NOT_FOUND));
     }
 
-    public Page<StudyRoomResponse> findAvailableStudyRooms(LocalDate date, LocalTime startTime, LocalTime endTime, Pageable pageable){
+    public List<StudyRoomResponse> findAvailableStudyRooms(LocalDate date, LocalTime startTime, LocalTime endTime, String cursorName, int size){
+        List<StudyRoom> studyRooms;
         if (date != null && startTime == null && endTime == null){
             int availableMinutes;
             DayOfWeek dayOfWeek = date.getDayOfWeek();
@@ -37,10 +39,11 @@ public class StudyRoomService {
             else{
                 availableMinutes = 660;
             }
-            return studyRoomRepository.findAvailableStudyRoomsByDate(date, availableMinutes, pageable)
-                    .map(studyRoomMapper::toResponseDto);
+            studyRooms =  studyRoomRepository.findAvailableStudyRoomsByDate(date, availableMinutes, cursorName, size+1);
         }
-        return studyRoomRepository.findAvailableStudyRooms(date, startTime, endTime, pageable)
-                .map(studyRoomMapper::toResponseDto);
+        else {
+            studyRooms = studyRoomRepository.findAvailableStudyRooms(date, startTime, endTime, cursorName, size+1);
+        }
+        return studyRooms.stream().map(studyRoomMapper::toResponseDto).toList();
     }
 }
