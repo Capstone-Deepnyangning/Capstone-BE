@@ -14,5 +14,5 @@ public class AccessResponse {
     private String name;
     private AuthMethod authMethod;
     private AccessType accessType;
-    private Float similarity;
+    private Double similarity;
 }

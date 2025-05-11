@@ -17,5 +17,5 @@ public class FailLogResponse {
 
     private LocalDateTime accessTime;
 
-    private Float similarity;
+    private Double similarity;
 }

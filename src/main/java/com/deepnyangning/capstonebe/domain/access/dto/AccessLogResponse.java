@@ -22,5 +22,5 @@ public class AccessLogResponse {
 
     private LocalDateTime accessTime;
 
-    private float similarity;
+    private double similarity;
 }

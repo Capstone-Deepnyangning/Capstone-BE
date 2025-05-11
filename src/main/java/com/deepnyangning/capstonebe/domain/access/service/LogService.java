@@ -38,12 +38,12 @@ public class LogService {
     private final FailLogMapper failLogMapper;
 
     @Transactional
-    public void saveAccessLog(User user, AuthMethod authMethod, AccessType accessType, Float similarity){
+    public void saveAccessLog(User user, AuthMethod authMethod, AccessType accessType, Double similarity){
         AccessLog accessLog = AccessLog.builder()
                 .user(user)
                 .authMethod(authMethod)
                 .accessType(accessType)
-                .similarity(similarity == null ? 0.0f : similarity)
+                .similarity(similarity == null ? 0.0 : similarity)
                 .build();
         accessLogRepository.save(accessLog);
 
@@ -53,7 +53,7 @@ public class LogService {
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public void saveFailLog(AuthMethod authMethod, Float similarity, ErrorCode errorCode){
+    public void saveFailLog(AuthMethod authMethod, Double similarity, ErrorCode errorCode){
         FailLog failLog = FailLog.builder()
                 .authMethod(authMethod)
                 .similarity(similarity)
@@ -85,5 +85,10 @@ public class LogService {
         AccessLogResponse dto = accessLogMapper.toResponseDto(accessLog);
         dto.setUserInfo(userMapper.toAccessLogUserInfo(accessLog.getUser()));
         return dto;
+    }
+
+    public LocalDateTime findLatestEntryTime(User user){
+        return accessLogRepository.findTopByUserAndAccessTypeOrderByAccessTimeDesc(user, AccessType.ENTRY)
+                .orElseThrow(() -> new CustomException(ErrorCode.ACCESS_LOG_NOT_FOUND)).getAccessTime();
     }
 }
