@@ -29,7 +29,7 @@ public class AccessLog {
 
     private LocalDateTime accessTime;
 
-    private float similarity;
+    private double similarity;
 
     @PrePersist
     protected void onCreate(){

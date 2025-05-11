@@ -22,5 +22,5 @@ public class FaceAccessRequest {
     @NotNull(message = "유사도는 필수로 제공해야 합니다.")
     @DecimalMin(value = "0.0", message = "유사도는 0.0 이상이어야 합니다.")
     @DecimalMax(value = "1.0", message = "유사도는 1.0 이하여야 합니다.")
-    private Float similarity;
+    private Double similarity;
 }

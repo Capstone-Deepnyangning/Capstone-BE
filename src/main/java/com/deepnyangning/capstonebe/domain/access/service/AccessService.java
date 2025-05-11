@@ -3,8 +3,10 @@ package com.deepnyangning.capstonebe.domain.access.service;
 import com.deepnyangning.capstonebe.domain.access.dto.AccessResponse;
 import com.deepnyangning.capstonebe.domain.access.dto.FaceAccessRequest;
 import com.deepnyangning.capstonebe.domain.access.dto.QrAccessRequest;
+import com.deepnyangning.capstonebe.domain.access.entity.AccessType;
 import com.deepnyangning.capstonebe.domain.access.entity.AuthMethod;
 import com.deepnyangning.capstonebe.domain.qr.service.QRService;
+import com.deepnyangning.capstonebe.domain.statistics.service.StatisticsService;
 import com.deepnyangning.capstonebe.domain.user.entity.User;
 import com.deepnyangning.capstonebe.domain.user.service.UserService;
 import com.deepnyangning.capstonebe.global.code.ErrorCode;
@@ -14,6 +16,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -21,6 +25,7 @@ public class AccessService {
     private final UserService userService;
     private final LogService logService;
     private final QRService qrService;
+    private final StatisticsService statisticsService;
 
     @Transactional
     public AccessResponse processQrAccess(QrAccessRequest request){
@@ -28,7 +33,7 @@ public class AccessService {
         try{
             identifier = qrService.validateQr(request.getQrCode());
         } catch (CustomException e){
-            logService.saveFailLog(AuthMethod.QR, 0.0f, e.getErrorCode());
+            logService.saveFailLog(AuthMethod.QR, 0.0, e.getErrorCode());
             throw e;
         }
 
@@ -36,11 +41,12 @@ public class AccessService {
         try{
             user = userService.findByIdentifier(identifier);
         } catch (CustomException e){
-            logService.saveFailLog(AuthMethod.QR, 0.0f, e.getErrorCode());
+            logService.saveFailLog(AuthMethod.QR, 0.0, e.getErrorCode());
             throw e;
         }
 
-        logService.saveAccessLog(user, AuthMethod.QR, request.getAccessType(), 0.0f);
+        logService.saveAccessLog(user, AuthMethod.QR, request.getAccessType(), 0.0);
+        statisticsService.updateDailyStay(user, request.getAccessType());
         return AccessResponse.builder().identifier(identifier).name(user.getName()).authMethod(AuthMethod.QR).accessType(request.getAccessType()).build();
     }
 
@@ -62,6 +68,7 @@ public class AccessService {
         }
 
         logService.saveAccessLog(user, AuthMethod.FACE, request.getAccessType(), request.getSimilarity());
+        statisticsService.updateDailyStay(user, request.getAccessType());
         return AccessResponse.builder().identifier(identifier).name(user.getName()).authMethod(AuthMethod.FACE).accessType(request.getAccessType()).similarity(request.getSimilarity()).build();
     }
 }
