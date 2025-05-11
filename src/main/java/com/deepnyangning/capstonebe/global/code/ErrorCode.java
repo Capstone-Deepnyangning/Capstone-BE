@@ -1,5 +1,6 @@
 package com.deepnyangning.capstonebe.global.code;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -20,6 +21,9 @@ public enum ErrorCode {
     INSUFFICIENT_SIMILARITY(HttpStatus.BAD_REQUEST, "안면 인식 유사도가 충분하지 않습니다."),
     INVALID_QR_CODE(HttpStatus.BAD_REQUEST, "유효하지 않은 QR 코드입니다."),
     SAME_AS_OLD_PASSWORD(HttpStatus.BAD_REQUEST, "새 비밀번호는 기존 비밀번호와 다르게 설정해야 합니다."),
+    INVALID_STUDY_ROOM_PARTICIPANTS(HttpStatus.BAD_REQUEST, "동반 이용자 수가 부족합니다."),
+    ALREADY_RESERVED_ON_DATE(HttpStatus.BAD_REQUEST, "해당 날짜에 이미 예약된 스터디룸이 존재합니다."),
+    INVALID_SELF_PARTICIPATION(HttpStatus.BAD_REQUEST, "본인의 학번으로는 신청할 수 없습니다."),
 
     /*
      * 401 UNAUTHORIZED: 인증되지 않은 사용자의 요청
