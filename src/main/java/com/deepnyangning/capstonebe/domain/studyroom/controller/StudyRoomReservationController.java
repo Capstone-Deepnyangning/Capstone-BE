@@ -16,6 +16,8 @@ import org.springframework.data.domain.Sort;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
@@ -32,15 +34,18 @@ public class StudyRoomReservationController {
 
 
     @PostMapping("/studyrooms/participants")
-    public ResponseEntity<ApiResponse<Boolean>> getStudyRoomParticipant(@RequestBody ParticipantRequest participantRequest){
-        boolean exists = participantService.existsParticipant(participantRequest);
-        return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.<Boolean>builder().result(exists).success(true).code(200).message("존재하는 사용자입니다.").build());
+    public ResponseEntity<ApiResponse<Boolean>> getStudyRoomParticipant(@AuthenticationPrincipal UserDetails userDetails, @RequestBody ParticipantRequest participantRequest){
+        String identifier = userDetails.getUsername();
+        boolean exists = participantService.existsParticipant(identifier, participantRequest);
+        String message = exists ? "존재하는 사용자입니다." : "일치하는 사용자가 존재하지 않습니다.";
+        return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.<Boolean>builder().result(exists).success(true).code(200).message(message).build());
     }
     // participantResponse로 응답하는 거 고려하기
 
     @PostMapping("/studyrooms/reservations")
-    public ResponseEntity<ApiResponse<ReservationResponse>> createStudyRoomReservation(@RequestBody ReservationRequest reservationRequest){
-        ReservationResponse reservationResponse = reservationService.saveReservation(reservationRequest);
+    public ResponseEntity<ApiResponse<ReservationResponse>> createStudyRoomReservation(@AuthenticationPrincipal UserDetails userDetails, @RequestBody ReservationRequest reservationRequest){
+        String identifier = userDetails.getUsername();
+        ReservationResponse reservationResponse = reservationService.saveReservation(identifier, reservationRequest);
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(ApiResponse.<ReservationResponse>builder().result(reservationResponse).success(true).code(201).message("스터디룸 예약에 성공했습니다.").build());
     }

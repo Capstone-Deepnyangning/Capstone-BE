@@ -19,6 +19,8 @@ import java.util.List;
 
 @Repository
 public interface StudyRoomReservationRepository extends JpaRepository<StudyRoomReservation, Long> {
+    boolean existsByUserAndDateAndStatusNot(User user, LocalDate date, ReservationStatus status);
+
     @Query(value = """
         SELECT r.* FROM study_room_reservation r
         JOIN study_room sr ON r.study_room_id = sr.id
@@ -41,8 +43,8 @@ public interface StudyRoomReservationRepository extends JpaRepository<StudyRoomR
             "ORDER BY r.date DESC " +
             "LIMIT :limit", nativeQuery = true)
     List<StudyRoomReservation> findByUser(@Param("userId") Long userId,
-                                                                         @Param("cursorDate") LocalDate cursorDate,
-                                                                         @Param("limit") int limit);
+                                          @Param("cursorDate") LocalDate cursorDate,
+                                          @Param("limit") int limit);
     List<StudyRoomReservation> findByDateAndEndTimeLessThanEqualAndStatus(LocalDate date, LocalTime time, ReservationStatus status);
 
     @Lock(LockModeType.PESSIMISTIC_WRITE)
