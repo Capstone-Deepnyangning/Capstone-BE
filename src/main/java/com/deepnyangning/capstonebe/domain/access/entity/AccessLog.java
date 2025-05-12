@@ -12,6 +12,10 @@ import java.time.LocalDateTime;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@Table(indexes = {
+        @Index(name = "idx_access_type_time", columnList = "access_type, access_time"),
+        @Index(name = "idx_user_id", columnList = "user_id")
+})
 public class AccessLog {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
