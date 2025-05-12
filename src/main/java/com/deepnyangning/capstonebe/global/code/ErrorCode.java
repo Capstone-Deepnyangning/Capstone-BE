@@ -24,6 +24,8 @@ public enum ErrorCode {
     INVALID_STUDY_ROOM_PARTICIPANTS(HttpStatus.BAD_REQUEST, "동반 이용자 수가 부족합니다."),
     ALREADY_RESERVED_ON_DATE(HttpStatus.BAD_REQUEST, "해당 날짜에 이미 예약된 스터디룸이 존재합니다."),
     INVALID_SELF_PARTICIPATION(HttpStatus.BAD_REQUEST, "본인의 학번으로는 신청할 수 없습니다."),
+    FACE_REGISTRATION_FAILED(HttpStatus.BAD_REQUEST, "얼굴 등록에 실패했습니다."),
+    INVALID_VIDEO_FILE(HttpStatus.BAD_REQUEST, "유효하지 않은 영상 파일입니다."),
 
     /*
      * 401 UNAUTHORIZED: 인증되지 않은 사용자의 요청
@@ -64,7 +66,8 @@ public enum ErrorCode {
     /*
      * 503 SERVICE_UNAVAILABLE: 서비스 이용 불가
      */
-    REDIS_OPERATION_FAILED(HttpStatus.SERVICE_UNAVAILABLE, "Redis 작업에 실패했습니다.");
+    REDIS_OPERATION_FAILED(HttpStatus.SERVICE_UNAVAILABLE, "Redis 작업에 실패했습니다."),
+    AI_SERVER_COMMUNICATION_FAILED(HttpStatus.SERVICE_UNAVAILABLE, "AI 서버와의 통신에 실패했습니다.");
 
     private final HttpStatus httpStatus;
     private final String message;

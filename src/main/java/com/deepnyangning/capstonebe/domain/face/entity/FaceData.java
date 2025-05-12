@@ -20,11 +20,5 @@ public class FaceData extends BaseEntity {
     @JoinColumn(name = "user_id")
     private User user;
 
-    @Lob
-    private byte[] faceVector;
-
-    @Enumerated(EnumType.STRING)
-    private TrainingMethod trainingMethod;
-
-    private float accuracy;
+    private String status; // SUCCESS or FAIL
 }
