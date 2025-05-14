@@ -33,7 +33,18 @@ public class JWTFilter extends OncePerRequestFilter {
         // 요청 헤더에서 Authorization 추출
         String authHeader = request.getHeader("Authorization");
 
+        // 헤더가 없거나 "Bearer "로 시작하지 않으면 인증 절차 건너뛰기
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            // 헤더가 없으면 인증 없이 다음 필터로 넘김
+            filterChain.doFilter(request, response);
+            return;
+        }
+
+        String token = authHeader.replace("Bearer ", "");
+
+        // 요청 URI 확인
         String uri = request.getRequestURI();
+
         if (uri.startsWith("/api/access/") ||
                 uri.startsWith("v3/api-docs/") ||
                 uri.startsWith("/swagger-ui/") ||
@@ -48,19 +59,6 @@ public class JWTFilter extends OncePerRequestFilter {
             return;
         }
 
-        if(authHeader == null || !authHeader.startsWith("Bearer ")){
-            filterChain.doFilter(request, response);
-            return;
-        }
-
-        String token = authHeader.replace("Bearer ", "");
-
-        if (uri.equals("/auth/reissue")) {
-            request.setAttribute("refreshToken", token);
-        } else {
-            request.setAttribute("accessToken", token);
-        }
-
         // JWT 유효성 검사
         try {
             jwtUtil.isValid(token);
@@ -71,7 +69,7 @@ public class JWTFilter extends OncePerRequestFilter {
         }
 
         // 블랙리스트 여부 확인
-        if(tokenService.isBlacklisted(token)){
+        if (tokenService.isBlacklisted(token)) {
             // error response 설정
             setErrorResponse(response, ErrorCode.TOKEN_ALREADY_LOGOUT);
             return;
