@@ -30,23 +30,11 @@ public class JWTFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        // 요청 헤더에서 Authorization 추출
-        String authHeader = request.getHeader("Authorization");
-
-        // 헤더가 없거나 "Bearer "로 시작하지 않으면 인증 절차 건너뛰기
-        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-            // 헤더가 없으면 인증 없이 다음 필터로 넘김
-            filterChain.doFilter(request, response);
-            return;
-        }
-
-        String token = authHeader.replace("Bearer ", "");
-
-        // 요청 URI 확인
         String uri = request.getRequestURI();
 
+        // 이 부분을 제일 먼저 처리: 토큰 존재 여부와 무관하게 우선 예외 URI는 통과
         if (uri.startsWith("/api/access/") ||
-                uri.startsWith("v3/api-docs/") ||
+                uri.startsWith("/v3/api-docs/") ||
                 uri.startsWith("/swagger-ui/") ||
                 uri.equals("/swagger-ui.html") ||
                 uri.startsWith("/swagger-resources/") ||
@@ -54,10 +42,19 @@ public class JWTFilter extends OncePerRequestFilter {
                 uri.equals("/actuator/health") ||
                 uri.equals("/auth/login") ||
                 uri.equals("/auth/signup")) {
-            // 인증 없이 다음 필터로 넘김
             filterChain.doFilter(request, response);
             return;
         }
+
+        // 여기부터는 인증 필수 URI만 검사
+        String authHeader = request.getHeader("Authorization");
+
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            filterChain.doFilter(request, response);
+            return;
+        }
+
+        String token = authHeader.replace("Bearer ", "");
 
         // JWT 유효성 검사
         try {
