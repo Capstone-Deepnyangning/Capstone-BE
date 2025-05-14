@@ -22,7 +22,14 @@ public class AccessLog {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "user_id")
+    @JoinColumn(
+            name = "user_id",
+            nullable = false,
+            foreignKey = @ForeignKey(
+                    name = "FK_access_log_user",
+                    foreignKeyDefinition = "FOREIGN KEY (user_id) REFERENCES user(id) ON DELETE CASCADE"
+            )
+    )
     private User user;
 
     @Enumerated(EnumType.STRING)
