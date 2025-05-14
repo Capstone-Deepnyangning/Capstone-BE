@@ -40,7 +40,7 @@ jobs:
       # 5. Gradle로 빌드 수행
       - name: Build with Gradle
         run: ./gradlew clean build -x test
-        continue-on-error: false  # 빌드 실패 시 중단
+        continue-on-error: false
 
       # 6. 빌드 결과 및 파일 확인
       - name: Check build artifacts
@@ -53,7 +53,7 @@ jobs:
       - name: Generate application.yml
         run: |
           echo "${{ secrets.APPLICATION_YML_CONTENT }}" > application.yml
-          ls -la application.yml  # 파일 생성 확인
+          ls -la application.yml
 
       # 8. JAR와 application.yml을 EC2로 복사
       - name: Copy files to EC2
@@ -62,10 +62,11 @@ jobs:
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USERNAME }}
           key: ${{ secrets.KEY }}
-          source: "build/libs/*.jar,application.yml"
+          source: "build/libs/Capstone-BE-0.0.1-SNAPSHOT.jar,application.yml"
           target: "${{ secrets.DEPLOY_PATH }}"
           debug: true
-          working-directory: .
+          timeout: 60s
+          command_timeout: 15m
 
       # 9. EC2에서 컨테이너 재시작
       - name: Restart Docker Compose
@@ -76,7 +77,8 @@ jobs:
           key: ${{ secrets.KEY }}
           script: |
             cd ${{ secrets.DEPLOY_PATH }}
-            echo "Stopping old containers..."
+            echo "Removing old containers and images..."
             docker-compose down
+            docker system prune -f --volumes
             echo "Starting new containers..."
-            docker-compose up -d
+            docker-compose up -d --build

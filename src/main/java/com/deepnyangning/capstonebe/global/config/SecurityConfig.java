@@ -96,18 +96,13 @@ public class SecurityConfig {
                 // 익명 사용자 허용
                 .anonymous(anonymous -> anonymous
                         .principal("anonymousUser")
-                        .authorities("ROLE_ANONYMOUS")); // 익명 사용자에게 명시적 역할 부여
+                        .authorities("ROLE_ANONYMOUS")) // 익명 사용자에게 명시적 역할 부여
 
-                // Http403ForbiddenEntryPoint 비활성화 (익명 요청 차단 방지)
-                http.exceptionHandling(exception -> exception
-                        .authenticationEntryPoint((request, response, authException) -> {
-                            // 인증되지 않은 요청에 대해 401 대신 403 방지
-                            if (request.getRequestURI().startsWith("/api/access/")) {
-                                response.setStatus(HttpServletResponse.SC_OK);
-                            } else {
-                                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized");
-                            }
-                        }));
+                // 예외 처리: 모든 인증 불필요 경로에서 403 차단 제거
+                .exceptionHandling(exception -> exception
+                    .authenticationEntryPoint((request, response, authException) -> {
+                        response.setStatus(HttpServletResponse.SC_OK); // 403 대신 200 OK
+                }));
         return http.build();
     }
 }
