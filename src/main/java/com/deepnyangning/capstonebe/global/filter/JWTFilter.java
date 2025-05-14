@@ -32,7 +32,7 @@ public class JWTFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         String uri = request.getRequestURI();
 
-        // 이 부분을 제일 먼저 처리: 토큰 존재 여부와 무관하게 우선 예외 URI는 통과
+        // 예외 URI는 통과
         if (uri.startsWith("/api/access/") ||
                 uri.startsWith("/v3/api-docs/") ||
                 uri.startsWith("/swagger-ui/") ||
@@ -46,7 +46,7 @@ public class JWTFilter extends OncePerRequestFilter {
             return;
         }
 
-        // 여기부터는 인증 필수 URI만 검사
+        // 인증 필수 URI만 검사
         String authHeader = request.getHeader("Authorization");
 
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
