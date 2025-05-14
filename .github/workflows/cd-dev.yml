@@ -4,7 +4,7 @@ on:
   pull_request:
     branches:
       - dev
-    types: [opened, synchronize, reopened]
+    types: [opened, synchronize, reopened]  # PR이 열리거나 업데이트될 때마다 배포
 
 jobs:
   deploy:
@@ -41,7 +41,13 @@ jobs:
       - name: Build with Gradle
         run: ./gradlew clean build -x test
 
-      # 6. application.yml 파일을 생성하여 EC2에 복사
+      # 6. 빌드 결과 확인
+      - name: Check if build artifacts exist
+        run: |
+          ls build/libs
+          ls
+
+      # 7. application.yml 파일을 생성하여 EC2에 복사
       - name: Generate application.yml from GitHub Secrets
         run: |
           echo "${{ secrets.APPLICATION_YML_CONTENT }}" > application.yml
@@ -57,7 +63,7 @@ jobs:
             application.yml
           target: "${{ secrets.DEPLOY_PATH }}"
 
-      # 7. EC2에 SSH 접속해서 컨테이너 재시작
+      # 8. EC2에 SSH 접속해서 컨테이너 재시작
       - name: SSH into EC2 and restart Docker Compose
         uses: appleboy/ssh-action@v1.0.0
         with:
