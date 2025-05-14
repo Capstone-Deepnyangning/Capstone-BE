@@ -33,15 +33,27 @@ public class JWTFilter extends OncePerRequestFilter {
         // 요청 헤더에서 Authorization 추출
         String authHeader = request.getHeader("Authorization");
 
+        String uri = request.getRequestURI();
+        if (uri.startsWith("/api/access/") ||
+                uri.startsWith("v3/api-docs/") ||
+                uri.startsWith("/swagger-ui/") ||
+                uri.equals("/swagger-ui.html") ||
+                uri.startsWith("/swagger-resources/") ||
+                uri.startsWith("/webjars/") ||
+                uri.equals("/actuator/health") ||
+                uri.equals("/auth/login") ||
+                uri.equals("/auth/signup")) {
+            // 인증 없이 다음 필터로 넘김
+            filterChain.doFilter(request, response);
+            return;
+        }
+
         if(authHeader == null || !authHeader.startsWith("Bearer ")){
             filterChain.doFilter(request, response);
             return;
         }
 
         String token = authHeader.replace("Bearer ", "");
-
-        // 요청 URI 확인
-        String uri = request.getRequestURI();
 
         if (uri.equals("/auth/reissue")) {
             request.setAttribute("refreshToken", token);
