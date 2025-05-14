@@ -78,7 +78,8 @@ public class SecurityConfig {
                                 "/swagger-resources/**",
                                 "/webjars/**",
                                 "/actuator/health",
-                                "/auth/login", "/auth/signup"
+                                "/auth/login", "/auth/signup",
+                                "/api/access/**"
                                 ).permitAll()
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
                         .anyRequest().authenticated()
