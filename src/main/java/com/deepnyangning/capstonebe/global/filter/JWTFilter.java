@@ -20,6 +20,8 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.Arrays;
+import java.util.List;
 
 @RequiredArgsConstructor
 public class JWTFilter extends OncePerRequestFilter {
@@ -32,16 +34,14 @@ public class JWTFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         String uri = request.getRequestURI();
 
-        // 예외 URI는 통과
-        if (uri.startsWith("/api/access/") ||
-                uri.startsWith("/v3/api-docs/") ||
-                uri.startsWith("/swagger-ui/") ||
-                uri.equals("/swagger-ui.html") ||
-                uri.startsWith("/swagger-resources/") ||
-                uri.startsWith("/webjars/") ||
-                uri.equals("/actuator/health") ||
-                uri.equals("/auth/login") ||
-                uri.equals("/auth/signup")) {
+        // 예외 URI 목록
+        List<String> permitAllUris = Arrays.asList(
+                "/api/access/", "/v3/api-docs/", "/swagger-ui/", "/swagger-ui.html",
+                "/swagger-resources/", "/webjars/", "/actuator/health", "/auth/login", "/auth/signup"
+        );
+
+        // 예외 URI는 필터링 없이 통과
+        if (permitAllUris.stream().anyMatch(uri::startsWith) || uri.equals("/swagger-ui.html")) {
             filterChain.doFilter(request, response);
             return;
         }

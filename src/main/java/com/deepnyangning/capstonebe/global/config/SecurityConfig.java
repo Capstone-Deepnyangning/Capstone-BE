@@ -5,6 +5,7 @@ import com.deepnyangning.capstonebe.domain.user.service.TokenService;
 import com.deepnyangning.capstonebe.global.filter.JWTFilter;
 import com.deepnyangning.capstonebe.global.util.JWTUtil;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -90,7 +91,23 @@ public class SecurityConfig {
 
                  // 세션 설정
                 .sessionManagement(session -> session
-                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+
+                // 익명 사용자 허용
+                .anonymous(anonymous -> anonymous
+                        .principal("anonymousUser")
+                        .authorities("ROLE_ANONYMOUS")); // 익명 사용자에게 명시적 역할 부여
+
+                // Http403ForbiddenEntryPoint 비활성화 (익명 요청 차단 방지)
+                http.exceptionHandling(exception -> exception
+                        .authenticationEntryPoint((request, response, authException) -> {
+                            // 인증되지 않은 요청에 대해 401 대신 403 방지
+                            if (request.getRequestURI().startsWith("/api/access/")) {
+                                response.setStatus(HttpServletResponse.SC_OK);
+                            } else {
+                                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized");
+                            }
+                        }));
         return http.build();
     }
 }
