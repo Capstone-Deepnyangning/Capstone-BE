@@ -64,7 +64,7 @@ jobs:
           key: ${{ secrets.KEY }}
           source: "build/libs/*.jar,application.yml"
           target: "${{ secrets.DEPLOY_PATH }}"
-          debug: true  # 디버깅 활성화
+          debug: true
           working-directory: .
 
       # 9. EC2에서 컨테이너 재시작
