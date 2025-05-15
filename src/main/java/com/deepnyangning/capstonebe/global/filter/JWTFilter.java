@@ -20,6 +20,8 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.Arrays;
+import java.util.List;
 
 @RequiredArgsConstructor
 public class JWTFilter extends OncePerRequestFilter {
@@ -30,24 +32,29 @@ public class JWTFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        // 요청 헤더에서 Authorization 추출
+        String uri = request.getRequestURI();
+
+        // 예외 URI 목록
+        List<String> permitAllUris = Arrays.asList(
+                "/api/access/", "/v3/api-docs/", "/swagger-ui/", "/swagger-ui.html",
+                "/swagger-resources/", "/webjars/", "/actuator/health", "/auth/login", "/auth/signup"
+        );
+
+        // 예외 URI는 필터링 없이 통과
+        if (permitAllUris.stream().anyMatch(uri::startsWith) || uri.equals("/swagger-ui.html")) {
+            filterChain.doFilter(request, response);
+            return;
+        }
+
+        // 인증 필수 URI만 검사
         String authHeader = request.getHeader("Authorization");
 
-        if(authHeader == null || !authHeader.startsWith("Bearer ")){
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             filterChain.doFilter(request, response);
             return;
         }
 
         String token = authHeader.replace("Bearer ", "");
-
-        // 요청 URI 확인
-        String uri = request.getRequestURI();
-
-        if (uri.equals("/auth/reissue")) {
-            request.setAttribute("refreshToken", token);
-        } else {
-            request.setAttribute("accessToken", token);
-        }
 
         // JWT 유효성 검사
         try {
@@ -59,7 +66,7 @@ public class JWTFilter extends OncePerRequestFilter {
         }
 
         // 블랙리스트 여부 확인
-        if(tokenService.isBlacklisted(token)){
+        if (tokenService.isBlacklisted(token)) {
             // error response 설정
             setErrorResponse(response, ErrorCode.TOKEN_ALREADY_LOGOUT);
             return;

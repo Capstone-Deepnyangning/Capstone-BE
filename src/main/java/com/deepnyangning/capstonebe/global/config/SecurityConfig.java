@@ -5,6 +5,7 @@ import com.deepnyangning.capstonebe.domain.user.service.TokenService;
 import com.deepnyangning.capstonebe.global.filter.JWTFilter;
 import com.deepnyangning.capstonebe.global.util.JWTUtil;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -79,7 +80,7 @@ public class SecurityConfig {
                                 "/webjars/**",
                                 "/actuator/health",
                                 "/auth/login", "/auth/signup",
-                                "/api/access/**"
+                                "/api/access/**", "/error"
                                 ).permitAll()
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
                         .anyRequest().authenticated()
@@ -90,7 +91,18 @@ public class SecurityConfig {
 
                  // 세션 설정
                 .sessionManagement(session -> session
-                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+
+                // 익명 사용자 허용
+                .anonymous(anonymous -> anonymous
+                        .principal("anonymousUser")
+                        .authorities("ROLE_ANONYMOUS"))
+
+                // 예외 처리: 모든 인증 불필요 경로에서 403 차단 제거
+                .exceptionHandling(exception -> exception
+                    .authenticationEntryPoint((request, response, authException) -> {
+                        response.setStatus(HttpServletResponse.SC_OK); // 403 대신 200 OK
+                }));
         return http.build();
     }
 }
