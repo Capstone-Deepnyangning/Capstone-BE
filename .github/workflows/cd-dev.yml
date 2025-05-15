@@ -79,21 +79,36 @@ jobs:
             exit 1
           fi
 
-      # 10. EC2로 파일 전송
-      - name: Copy files to EC2
+      # 10. EC2로 JAR 파일 전송
+      - name: Copy JAR to EC2
         uses: appleboy/scp-action@v0.1.7
         with:
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USERNAME }}
           key: ${{ secrets.KEY }}
-          source: "build/libs/${{ env.JAR_NAME }},application.yml"
+          source: "build/libs/${{ env.JAR_NAME }}"
           target: "${{ secrets.DEPLOY_PATH }}"
+          overwrite: true
           debug: true
           timeout: 60s
           command_timeout: 15m
           strip_components: 1
 
-      # 11. EC2에서 파일 전송 확인
+      # 11. EC2로 YML 파일 전송
+      - name: Copy application.yml to EC2
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          key: ${{ secrets.KEY }}
+          source: "application.yml"
+          target: "${{ secrets.DEPLOY_PATH }}"
+          overwrite: true
+          debug: true
+          timeout: 60s
+          command_timeout: 15m
+
+      # 12. EC2에서 파일 전송 확인
       - name: Verify files on EC2
         uses: appleboy/ssh-action@v1.0.0
         with:
@@ -127,7 +142,7 @@ jobs:
               exit 1
             fi
 
-      # 12. EC2에서 심볼릭 링크로 jar 교체 및 컨테이너 재시작
+      # 13. EC2에서 심볼릭 링크로 jar 교체 및 컨테이너 재시작
       - name: Update symlink and restart Docker Compose
         uses: appleboy/ssh-action@v1.0.0
         with:
