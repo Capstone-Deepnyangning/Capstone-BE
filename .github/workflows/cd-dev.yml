@@ -68,13 +68,31 @@ jobs:
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USERNAME }}
           key: ${{ secrets.KEY }}
-          source: "build/libs/${{ env.JAR_NAME }},application.yml"
+          source: "build/libs/${{ env.JAR_NAME }},application.trip.yml"
           target: "${{ secrets.DEPLOY_PATH }}"
           debug: true
           timeout: 60s
           command_timeout: 15m
+          strip_components: 1  # build/libs/ 디렉토리 구조 제거
 
-      # 10. EC2에서 심볼릭 링크로 jar 교체 및 컨테이너 재시작
+      # 10. EC2에서 파일 전송 확인
+      - name: Verify files on EC2
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          key: ${{ secrets.KEY }}
+          script: |
+            echo "Checking files in ${{ secrets.DEPLOY_PATH }}..."
+            ls -la ${{ secrets.DEPLOY_PATH }}
+            if [ -f "${{ secrets.DEPLOY_PATH }}/${{ env.JAR_NAME }}" ] && [ -f "${{ secrets.DEPLOY_PATH }}/application.yml" ]; then
+              echo "Files successfully transferred."
+            else
+              echo "Error: Files not found in ${{ secrets.DEPLOY_PATH }}!"
+              exit 1
+            fi
+
+      # 11. EC2에서 심볼릭 링크로 jar 교체 및 컨테이너 재시작
       - name: Update symlink and restart Docker Compose
         uses: appleboy/ssh-action@v1.0.0
         with:
@@ -83,9 +101,27 @@ jobs:
           key: ${{ secrets.KEY }}
           script: |
             cd ${{ secrets.DEPLOY_PATH }}
-            echo "Linking ${{ env.JAR_NAME }} to app.jar..."
-            ln -sf ${{ env.JAR_NAME }} app.jar
-
+            echo "Current directory: $(pwd)"
+            ls -la
+            if [ -f "${{ env.JAR_NAME }}" ]; then
+              echo "Linking ${{ env.JAR_NAME }} to app.jar..."
+              ln -sf ${{ env.JAR_NAME }} app.jar
+            else
+              echo "Error: ${{ env.JAR_NAME }} not found in ${{ secrets.DEPLOY_PATH }}!"
+              exit 1
+            fi
+            if [ -f "application.yml" ]; then
+              echo "application.yml found."
+            else
+              echo "Error: application.yml not found in ${{ secrets.DEPLOY_PATH }}!"
+              exit 1
+            fi
+            if [ -L "app.jar" ] && [ -f "app.jar" ]; then
+              echo "app.jar symlink created and valid."
+            else
+              echo "Error: app.jar symlink invalid or not created!"
+              exit 1
+            fi
             echo "Restarting containers..."
             docker-compose down
             docker system prune -f --volumes
