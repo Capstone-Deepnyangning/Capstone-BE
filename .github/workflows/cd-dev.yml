@@ -40,36 +40,42 @@ jobs:
       # 5. Gradle로 빌드 수행
       - name: Build with Gradle
         run: ./gradlew clean build -x test
-        continue-on-error: false
 
-      # 6. 빌드 결과 및 파일 확인
-      - name: Check build artifacts
+      # 6. 커밋 SHA 기반 JAR 이름 생성
+      - name: Generate SHA-based JAR name
+        id: generate_tag
         run: |
-          ls -la build/libs/
-          ls -la
-          find . -name "*.jar"
+          SHORT_SHA=$(echo $GITHUB_SHA | cut -c1-7)
+          echo "SHORT_SHA=$SHORT_SHA" >> $GITHUB_ENV
+          echo "JAR_NAME=Capstone-BE-$SHORT_SHA.jar" >> $GITHUB_ENV
 
-      # 7. application.yml 생성 및 확인
+      # 7. JAR 이름 변경
+      - name: Rename JAR with SHA
+        run: |
+          mv build/libs/Capstone-BE-0.0.1-SNAPSHOT.jar build/libs/${{ env.JAR_NAME }}
+          ls -la build/libs/
+
+      # 8. application.yml 생성
       - name: Generate application.yml
         run: |
           echo "${{ secrets.APPLICATION_YML_CONTENT }}" > application.yml
           ls -la application.yml
 
-      # 8. JAR와 application.yml을 EC2로 복사
+      # 9. EC2로 파일 전송
       - name: Copy files to EC2
         uses: appleboy/scp-action@v0.1.7
         with:
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USERNAME }}
           key: ${{ secrets.KEY }}
-          source: "build/libs/Capstone-BE-0.0.1-SNAPSHOT.jar,application.yml"
+          source: "build/libs/${{ env.JAR_NAME }},application.yml"
           target: "${{ secrets.DEPLOY_PATH }}"
           debug: true
           timeout: 60s
           command_timeout: 15m
 
-      # 9. EC2에서 컨테이너 재시작
-      - name: Restart Docker Compose
+      # 10. EC2에서 심볼릭 링크로 jar 교체 및 컨테이너 재시작
+      - name: Update symlink and restart Docker Compose
         uses: appleboy/ssh-action@v1.0.0
         with:
           host: ${{ secrets.HOST }}
@@ -77,8 +83,10 @@ jobs:
           key: ${{ secrets.KEY }}
           script: |
             cd ${{ secrets.DEPLOY_PATH }}
-            echo "Removing old containers and images..."
+            echo "Linking ${{ env.JAR_NAME }} to app.jar..."
+            ln -sf ${{ env.JAR_NAME }} app.jar
+
+            echo "Restarting containers..."
             docker-compose down
             docker system prune -f --volumes
-            echo "Starting new containers..."
             docker-compose up -d --build
