@@ -54,7 +54,14 @@ jobs:
       # 7. JAR 이름 변경
       - name: Rename JAR with SHA
         run: |
-          mv build/libs/Capstone-BE-0.0.1-SNAPSHOT.jar build/libs/${{ env.JAR_NAME }}
+          ls -la build/libs/
+          if [ -f "build/libs/Capstone-BE-0.0.1-SNAPSHOT.jar" ]; then
+            mv build/libs/Capstone-BE-0.0.1-SNAPSHOT.jar build/libs/${{ env.JAR_NAME }}
+            echo "Renamed to ${{ env.JAR_NAME }}"
+          else
+            echo "Error: Capstone-BE-0.0.1-SNAPSHOT.jar not found!"
+            exit 1
+          fi
           ls -la build/libs/
 
       # 8. application.yml 생성
