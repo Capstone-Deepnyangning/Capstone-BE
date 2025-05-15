@@ -46,6 +46,8 @@ jobs:
         id: generate_tag
         run: |
           SHORT_SHA=$(echo $GITHUB_SHA | cut -c1-7)
+          echo "SHORT_SHA=$SHORT_SHA"
+          echo "JAR_NAME=Capstone-BE-$SHORT_SHA.jar"
           echo "SHORT_SHA=$SHORT_SHA" >> $GITHUB_ENV
           echo "JAR_NAME=Capstone-BE-$SHORT_SHA.jar" >> $GITHUB_ENV
 
@@ -61,21 +63,32 @@ jobs:
           echo "${{ secrets.APPLICATION_YML_CONTENT }}" > application.yml
           ls -la application.yml
 
-      # 9. EC2로 파일 전송
+      # 9. JAR 파일 확인
+      - name: Verify JAR file before SCP
+        run: |
+          ls -la build/libs/
+          if [ -f "build/libs/${{ env.JAR_NAME }}" ]; then
+            echo "${{ env.JAR_NAME }} exists."
+          else
+            echo "Error: ${{ env.JAR_NAME }} not found in build/libs!"
+            exit 1
+          fi
+
+      # 10. EC2로 파일 전송
       - name: Copy files to EC2
         uses: appleboy/scp-action@v0.1.7
         with:
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USERNAME }}
           key: ${{ secrets.KEY }}
-          source: "build/libs/${{ env.JAR_NAME }},application.trip.yml"
+          source: "build/libs/${{ env.JAR_NAME }},application.yml"
           target: "${{ secrets.DEPLOY_PATH }}"
           debug: true
           timeout: 60s
           command_timeout: 15m
-          strip_components: 1  # build/libs/ 디렉토리 구조 제거
+          strip_components: 1
 
-      # 10. EC2에서 파일 전송 확인
+      # 11. EC2에서 파일 전송 확인
       - name: Verify files on EC2
         uses: appleboy/ssh-action@v1.0.0
         with:
@@ -85,14 +98,31 @@ jobs:
           script: |
             echo "Checking files in ${{ secrets.DEPLOY_PATH }}..."
             ls -la ${{ secrets.DEPLOY_PATH }}
+            echo "Checking for ${{ env.JAR_NAME }}..."
+            if [ -f "${{ secrets.DEPLOY_PATH }}/${{ env.JAR_NAME }}" ]; then
+              echo "${{ env.JAR_NAME }} found."
+            else
+              echo "Error: ${{ env.JAR_NAME }} not found!"
+            fi
+            echo "Checking for application.yml..."
+            if [ -f "${{ secrets.DEPLOY_PATH }}/application.yml" ]; then
+              echo "application.yml found."
+            else
+              echo "Error: application.yml not found!"
+            fi
+            echo "Checking for broken symlinks..."
+            if [ -L "${{ secrets.DEPLOY_PATH }}/app.jar" ] && [ ! -e "${{ secrets.DEPLOY_PATH }}/app.jar" ]; then
+              echo "Warning: app.jar is a broken symlink!"
+              rm -f "${{ secrets.DEPLOY_PATH }}/app.jar"
+            fi
             if [ -f "${{ secrets.DEPLOY_PATH }}/${{ env.JAR_NAME }}" ] && [ -f "${{ secrets.DEPLOY_PATH }}/application.yml" ]; then
               echo "Files successfully transferred."
             else
-              echo "Error: Files not found in ${{ secrets.DEPLOY_PATH }}!"
+              echo "Error: Required files not found in ${{ secrets.DEPLOY_PATH }}!"
               exit 1
             fi
 
-      # 11. EC2에서 심볼릭 링크로 jar 교체 및 컨테이너 재시작
+      # 12. EC2에서 심볼릭 링크로 jar 교체 및 컨테이너 재시작
       - name: Update symlink and restart Docker Compose
         uses: appleboy/ssh-action@v1.0.0
         with:
@@ -103,6 +133,10 @@ jobs:
             cd ${{ secrets.DEPLOY_PATH }}
             echo "Current directory: $(pwd)"
             ls -la
+            if [ -L "app.jar" ] && [ ! -e "app.jar" ]; then
+              echo "Removing broken app.jar symlink..."
+              rm -f app.jar
+            fi
             if [ -f "${{ env.JAR_NAME }}" ]; then
               echo "Linking ${{ env.JAR_NAME }} to app.jar..."
               ln -sf ${{ env.JAR_NAME }} app.jar
