@@ -42,7 +42,6 @@ public class NotificationService {
 
     // 지정된 사용자에게 PushType에 따라 푸시 알림 전송
     public void sendPush(User user, PushType type){
-        //User user = userService.findByIdentifier(identifier);
         List<FcmToken> tokens = fcmTokenRepository.findByUser(user);
 
         String message = PushMessageFactory.getMessage(type);
