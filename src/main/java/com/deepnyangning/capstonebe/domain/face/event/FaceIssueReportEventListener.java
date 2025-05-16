@@ -5,6 +5,8 @@ import com.deepnyangning.capstonebe.domain.notification.service.NotificationServ
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.event.TransactionPhase;
+import org.springframework.transaction.event.TransactionalEventListener;
 
 @Slf4j
 @Component
@@ -12,6 +14,7 @@ import org.springframework.stereotype.Component;
 public class FaceIssueReportEventListener {
     private final NotificationService notificationService;
 
+    @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     public void onFaceIssueReportCreated(FaceIssueReportCreatedEvent event){
         try{
             notificationService.sendToAdmin(PushType.FACE_ISSUE_REPORTED);
