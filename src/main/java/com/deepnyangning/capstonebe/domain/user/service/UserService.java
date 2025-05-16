@@ -1,6 +1,7 @@
 package com.deepnyangning.capstonebe.domain.user.service;
 
 import com.deepnyangning.capstonebe.domain.user.dto.PasswordUpdate;
+import com.deepnyangning.capstonebe.domain.user.entity.Role;
 import com.deepnyangning.capstonebe.domain.user.entity.User;
 import com.deepnyangning.capstonebe.domain.user.repository.UserRepository;
 import com.deepnyangning.capstonebe.global.code.ErrorCode;
@@ -9,6 +10,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -21,9 +24,8 @@ public class UserService {
                 .orElseThrow(()-> new CustomException(ErrorCode.USER_NOT_FOUND));
     }
 
-    public User findById(Long id){
-        return userRepository.findById(id)
-                .orElseThrow(()-> new CustomException(ErrorCode.USER_NOT_FOUND));
+    public List<User> findAdmins(){
+        return userRepository.findByRole(Role.ADMIN);
     }
 
     public boolean existsByIdentifier(String identifier){
