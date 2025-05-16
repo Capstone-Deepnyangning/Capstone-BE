@@ -8,6 +8,7 @@ import com.deepnyangning.capstonebe.domain.studyroom.repository.StudyRoomReserva
 import com.deepnyangning.capstonebe.domain.user.entity.User;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,6 +17,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class ReservationPushScheduler {
@@ -41,9 +43,22 @@ public class ReservationPushScheduler {
 
         List<StudyRoomReservation> reservations = reservationRepository.findByDateAndStartTimeAndStatus(date, startTime, ReservationStatus.CONFIRMED);
 
+        int successCnt = 0;
+        int failCnt = 0;
+
         for(StudyRoomReservation reservation : reservations){
             User user = reservation.getUser();
-            notificationService.sendPush(user, PushType.STUDY_ROOM_REMINDER);
+            try{
+                notificationService.sendPush(user, PushType.STUDY_ROOM_REMINDER);
+                successCnt++;
+                log.debug("스터디룸 리마인드 푸시 전송 성공: ientifier={}, reservationId={}", user.getIdentifier(), reservation.getId());
+            } catch (Exception e){
+                failCnt++;
+                log.debug("스터디룸 리마인드 푸시 전송 실패: identifier={}, reservationId={}, error={}", user.getIdentifier(), reservation.getId(), e.toString());
+            }
         }
+
+        log.info("스터디룸 리마인드 알림 전송 완료 - 날짜: {}, 시작 시간: {}, 총 대상: {}건, 성공: {}건, 실패: {}건",
+                date, startTime, reservations.size(), successCnt, failCnt);
     }
 }
