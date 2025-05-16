@@ -115,3 +115,15 @@ jobs:
             docker-compose down
             docker system prune -f --volumes
             docker-compose up -d --build
+
+      # 12. EC2에서 app.jar 위치 이동 (명시적 복사)
+      - name: Move app.jar to correct path
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          key: ${{ secrets.KEY }}
+          script: |
+            cp ${{ secrets.DEPLOY_PATH }}/app.jar /home/ubuntu/services/app.jar
+            cp ${{ secrets.DEPLOY_PATH }}/application.yml /home/ubuntu/services/application.yml
+            echo "Files moved to /home/ubuntu/services"
