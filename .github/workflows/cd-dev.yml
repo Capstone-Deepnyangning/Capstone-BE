@@ -70,6 +70,7 @@ jobs:
           target: "${{ secrets.DEPLOY_PATH }}"
           overwrite: true
           debug: true
+          strip_components: 2
 
       # 10. application.yml 전송
       - name: Copy application.yml to EC2
