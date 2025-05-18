@@ -57,7 +57,16 @@ jobs:
               secret-key: ${{ secrets.JWT_SECRET_KEY }}
               access-exp-time: ${{ secrets.ACCESS_EXP_TIME }}
               refresh-exp-time: ${{ secrets.REFRESH_EXP_TIME }}
+          
+            firebase:
+              project-id: capstone-dnn-bfa9f
+              key-path: ./src/main/resources/firebase/serviceAccountKey.json
             EOF
+
+      - name: Decode Firebase service account key
+        run: |
+          mkdir -p src/main/resources/firebase
+          echo "${{ secrets.FIREBASE_KEY_BASE64 }}" | base64 --decode > src/main/resources/firebase/serviceAccountKey.json
 
       - name: Run Tests with H2
         run: ./gradlew test -Dspring.profiles.active=test
