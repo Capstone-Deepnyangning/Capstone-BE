@@ -57,4 +57,6 @@ public interface StudyRoomReservationRepository extends JpaRepository<StudyRoomR
                                                         @Param("startTime") LocalTime startTime,
                                                         @Param("endTime") LocalTime endTime,
                                                         @Param("status") ReservationStatus status);
+
+    List<StudyRoomReservation> findByDateAndStartTimeAndStatus(LocalDate date, LocalTime startTime, ReservationStatus status);
 }
