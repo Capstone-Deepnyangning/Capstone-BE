@@ -33,47 +33,45 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-gradle-
 
-      # 4. 실행 권한 부여
+      # 4. gradlew 실행 권한 부여
       - name: Grant execute permission to gradlew
         run: chmod +x ./gradlew
 
-      # 5. Gradle로 빌드 수행
-      - name: Build with Gradle
-        run: |
-          ./gradlew clean build -x test
-          ls -la build/libs/
-          [ -f "build/libs/Capstone-BE-0.0.1-SNAPSHOT.jar" ] || { echo "JAR not found!"; exit 1; }
-          echo "Build from commit: $GITHUB_SHA"
+      # 5. 고유 태그 생성 (커밋 SHA 앞 7자리)
+      - name: Generate Unique Tag
+        id: generate_tag
+        run: echo "tag=$(echo $GITHUB_SHA | cut -c1-7)" >> $GITHUB_OUTPUT
 
-      # 6. JAR 이름 변경
-      - name: Rename JAR to app.jar
-        run: |
-          mv build/libs/Capstone-BE-0.0.1-SNAPSHOT.jar build/libs/app.jar
-          ls -la build/libs/
-          [ -f "build/libs/app.jar" ] || { echo "app.jar not found!"; exit 1; }
+      # 6. Gradle로 빌드 수행
+      - name: Build JAR
+        run: ./gradlew clean bootJar -x test
 
-      # 7. application.yml 생성
+      # 7. 빌드된 JAR 이름 변경
+      - name: Rename JAR with tag
+        run: |
+          TAG=${{ steps.generate_tag.outputs.tag }}
+          mv build/libs/Capstone-BE-0.0.1-SNAPSHOT.jar build/libs/app-${TAG}.jar
+          ls -la build/libs/
+
+      # 8. application.yml 생성
       - name: Generate application.yml
         run: |
           echo "${{ secrets.APPLICATION_YML_CONTENT }}" > application.yml
           ls -la application.yml
 
-      # 8. app.jar 전송
-      - name: Copy app.jar to EC2
+      # 9. JAR 전송
+      - name: Copy JAR to EC2
         uses: appleboy/scp-action@v0.1.7
         with:
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USERNAME }}
           key: ${{ secrets.KEY }}
-          source: "build/libs/app.jar"
+          source: "build/libs/app-${{ steps.generate_tag.outputs.tag }}.jar"
           target: "${{ secrets.DEPLOY_PATH }}"
           overwrite: true
           debug: true
-          timeout: 60s
-          command_timeout: 15m
-          strip_components: 1
 
-      # 9. application.yml 전송
+      # 10. application.yml 전송
       - name: Copy application.yml to EC2
         uses: appleboy/scp-action@v0.1.7
         with:
@@ -84,25 +82,9 @@ jobs:
           target: "${{ secrets.DEPLOY_PATH }}"
           overwrite: true
           debug: true
-          timeout: 60s
-          command_timeout: 15m
 
-      # 10. EC2에서 파일 전송 확인
-      - name: Verify files on EC2
-        uses: appleboy/ssh-action@v1.0.0
-        with:
-          host: ${{ secrets.HOST }}
-          username: ${{ secrets.USERNAME }}
-          key: ${{ secrets.KEY }}
-          script: |
-            echo "Checking files in ${{ secrets.DEPLOY_PATH }}..."
-            ls -la ${{ secrets.DEPLOY_PATH }}
-            [ -f "${{ secrets.DEPLOY_PATH }}/app.jar" ] || { echo "app.jar not found!"; exit 1; }
-            [ -f "${{ secrets.DEPLOY_PATH }}/application.yml" ] || { echo "application.yml not found!"; exit 1; }
-            echo "Files successfully transferred."
-
-      # 11. EC2에서 Docker Compose 재시작
-      - name: Restart Docker Compose
+      # 11. EC2에서 파일 존재 확인 및 app.jar로 복사
+      - name: Prepare files on EC2
         uses: appleboy/ssh-action@v1.0.0
         with:
           host: ${{ secrets.HOST }}
@@ -110,20 +92,23 @@ jobs:
           key: ${{ secrets.KEY }}
           script: |
             cd ${{ secrets.DEPLOY_PATH }}
-            echo "Current directory: $(pwd)"
+            echo "Checking uploaded files..."
             ls -la
-            docker-compose down
-            docker system prune -f --volumes
-            docker-compose up -d --build
+            TAG=${{ steps.generate_tag.outputs.tag }}
+            cp app-${TAG}.jar /home/ubuntu/services/app.jar
+            cp application.yml /home/ubuntu/services/application.yml
+            echo "Files moved to /home/ubuntu/services"
 
-      # 12. EC2에서 app.jar 위치 이동 (명시적 복사)
-      - name: Move app.jar to correct path
+      # 12. Docker Compose 재시작
+      - name: Restart Docker Compose
         uses: appleboy/ssh-action@v1.0.0
         with:
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USERNAME }}
           key: ${{ secrets.KEY }}
           script: |
-            cp ${{ secrets.DEPLOY_PATH }}/app.jar /home/ubuntu/services/app.jar
-            cp ${{ secrets.DEPLOY_PATH }}/application.yml /home/ubuntu/services/application.yml
-            echo "Files moved to /home/ubuntu/services"
+            cd /home/ubuntu/services
+            echo "Restarting docker-compose..."
+            docker-compose down
+            docker system prune -f --volumes
+            docker-compose up -d --build
