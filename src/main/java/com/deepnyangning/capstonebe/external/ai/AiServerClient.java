@@ -12,7 +12,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 @Component
 public class AiServerClient {
-    private static final String AI_SERVER_URL = ""; // 추후 작성
+    private static final String AI_SERVER_URL = "https://1ac8-116-44-51-91.ngrok-free.app/register_face";
 
     public String sendFaceDataToAiServer(MultipartFile file, String identifier){
         try {
