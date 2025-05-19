@@ -12,4 +12,6 @@ public class UserResponse {
     private String identifier;
 
     private String name;
+
+    private boolean faceRegistered;
 }

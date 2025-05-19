@@ -27,4 +27,8 @@ public class User extends BaseEntity {
 
     @Builder.Default
     private boolean isActive = true;
+
+    @Builder.Default
+    private boolean isFaceRegistered = false;
+
 }
