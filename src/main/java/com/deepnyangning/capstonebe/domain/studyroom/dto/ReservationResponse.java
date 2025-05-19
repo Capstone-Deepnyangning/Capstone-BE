@@ -15,7 +15,7 @@ import java.util.List;
 public class ReservationResponse {
     private Long id;
 
-    private StudyRoomResponse studyRoom;
+    private StudyRoomSimpleResponse studyRoom;
 
     private Long userId;
 

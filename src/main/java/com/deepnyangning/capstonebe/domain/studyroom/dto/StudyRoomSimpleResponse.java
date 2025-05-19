@@ -2,14 +2,12 @@ package com.deepnyangning.capstonebe.domain.studyroom.dto;
 
 import lombok.*;
 
-import java.util.Map;
-
 @Getter
 @Setter
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class StudyRoomResponse {
+public class StudyRoomSimpleResponse {
     private Long id;
 
     private String name;
@@ -19,6 +17,4 @@ public class StudyRoomResponse {
     private int minCapacity;
 
     private int maxCapacity;
-
-    private Map<Integer, Boolean> reservedTimes;
 }
