@@ -52,6 +52,7 @@ public enum ErrorCode {
     FACE_ISSUE_REPORT_NOT_FOUND(HttpStatus.NOT_FOUND, "안면 인식 문제 신고 데이터를 찾을 수 없습니다."),
     ACCESS_LOG_NOT_FOUND(HttpStatus.NOT_FOUND, "출입 로그를 찾을 수 없습니다."),
     GLOBAL_AVG_NOT_FOUND(HttpStatus.NOT_FOUND, "전체 사용자의 출입 통계 기록을 찾을 수 없습니다."),
+    AI_SERVER_ENDPOINT_NOT_FOUND(HttpStatus.NOT_FOUND, "AI 서버 엔드포인트를 찾을 수 없습니다."),
 
     /*
      * 405 METHOD_NOT_ALLOWED: 허용되지 않은 Request Method 호출
@@ -67,7 +68,8 @@ public enum ErrorCode {
      * 503 SERVICE_UNAVAILABLE: 서비스 이용 불가
      */
     REDIS_OPERATION_FAILED(HttpStatus.SERVICE_UNAVAILABLE, "Redis 작업에 실패했습니다."),
-    AI_SERVER_COMMUNICATION_FAILED(HttpStatus.SERVICE_UNAVAILABLE, "AI 서버와의 통신에 실패했습니다.");
+    AI_SERVER_COMMUNICATION_FAILED(HttpStatus.SERVICE_UNAVAILABLE, "AI 서버와의 통신에 실패했습니다."),
+    AI_SERVER_UNREACHABLE(HttpStatus.SERVICE_UNAVAILABLE, "AI 서버에 연결할 수 없습니다.");
 
     private final HttpStatus httpStatus;
     private final String message;
