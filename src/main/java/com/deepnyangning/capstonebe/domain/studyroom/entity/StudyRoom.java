@@ -20,6 +20,8 @@ public class StudyRoom extends BaseEntity {
 
     private String name;
 
+    private String location;
+
     private int minCapacity;
 
     private int maxCapacity;

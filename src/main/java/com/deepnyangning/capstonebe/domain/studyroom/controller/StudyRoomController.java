@@ -15,6 +15,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
@@ -39,6 +40,17 @@ public class StudyRoomController {
                                                                                        @RequestParam(required = false) @DateTimeFormat(pattern = "HH:mm") LocalTime endTime,
                                                                                        @RequestParam(required = false) String cursorName,
                                                                                        @RequestParam(defaultValue = "7") int size){
+        if(date == null) date = LocalDate.now();
+        if(date.getDayOfWeek() == DayOfWeek.SUNDAY){
+            return ResponseEntity.ok(
+                    ApiResponse.<CursorPage<StudyRoomResponse>>builder()
+                            .result(CursorPage.of(List.of(), size))
+                            .success(true)
+                            .code(200)
+                            .message("일요일은 스터디룸이 운영되지 않습니다.")
+                            .build()
+            );
+        }
         List<StudyRoomResponse> response = studyRoomService.findAvailableStudyRooms(date, startTime, endTime, cursorName, size);
         return ResponseEntity.status(HttpStatus.OK)
                 .body(ApiResponse.<CursorPage<StudyRoomResponse>>builder().result(CursorPage.of(response, size)).success(true).code(200).message("스터디룸 조회에 성공했습니다.").build());

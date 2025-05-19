@@ -40,8 +40,11 @@ public class StudyRoomParticipantValidator {
         boolean hasReservation = reservationRepository.existsByUserAndDateAndStatusNot(user, date, ReservationStatus.CANCELED);
         boolean hasParticipation = participantRepository.existsByIdentifierAndDate(user.getIdentifier(), date);
 
-        if(hasReservation || hasParticipation){
+        if(hasReservation){
             throw new CustomException(ErrorCode.ALREADY_RESERVED_ON_DATE);
+        }
+        if(hasParticipation){
+            throw new CustomException(ErrorCode.ALREADY_RESERVED_ON_DATE, "이미 다른 스터디룸에 동반이용자로 등록되어 있습니다. 같은 날짜에 추가 예약이 불가능합니다.");
         }
     }
 }
