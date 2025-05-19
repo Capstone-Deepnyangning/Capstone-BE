@@ -36,5 +36,8 @@ public class FaceDataService {
         if("FAIL".equals(aiServerResponse)){
             throw new CustomException(ErrorCode.FACE_REGISTRATION_FAILED);
         }
+        else{
+            user.setFaceRegistered(true);
+        }
     }
 }

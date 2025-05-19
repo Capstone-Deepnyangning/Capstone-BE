@@ -1,40 +1,71 @@
 package com.deepnyangning.capstonebe.external.ai;
 
+import com.deepnyangning.capstonebe.external.ai.dto.AiResponse;
 import com.deepnyangning.capstonebe.global.code.ErrorCode;
 import com.deepnyangning.capstonebe.global.exception.CustomException;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.ByteArrayResource;
+import org.springframework.core.io.FileSystemResource;
 import org.springframework.http.*;
 import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.util.List;
+
+@Slf4j
 @Component
+@RequiredArgsConstructor
 public class AiServerClient {
-    private static final String AI_SERVER_URL = ""; // 추후 작성
+    private static final String AI_SERVER_URL = "https://927a-116-44-51-91.ngrok-free.app/register_face";
+    private final RestTemplate restTemplate;
+
 
     public String sendFaceDataToAiServer(MultipartFile file, String identifier){
         try {
+            if (file == null || file.isEmpty()) {
+                log.error("파일이 없거나 비어 있음");
+                throw new CustomException(ErrorCode.INVALID_VIDEO_FILE);
+            }
+
+            log.info("파일 전송: URL={}, 이름={}, 크기={}, identifier={}", AI_SERVER_URL, file.getOriginalFilename(), file.getSize(), identifier);
+
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.MULTIPART_FORM_DATA);
+            headers.setAccept(List.of(MediaType.APPLICATION_JSON));
 
             MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
-            body.add("file", new ByteArrayResource(file.getBytes()) {
-                @Override
-                public String getFilename() {
-                    return file.getOriginalFilename(); // null 방지
-                }
-            });
+            File tempFile = File.createTempFile("upload", file.getOriginalFilename());
+            file.transferTo(tempFile);
+            body.add("file", new FileSystemResource(tempFile));
             body.add("identifier", identifier);
 
             HttpEntity<MultiValueMap<String, Object>> request = new HttpEntity<>(body, headers);
 
-            RestTemplate restTemplate = new RestTemplate();
-            ResponseEntity<String> response = restTemplate.exchange(AI_SERVER_URL, HttpMethod.POST, request, String.class);
+            ResponseEntity<AiResponse> response = restTemplate.exchange(AI_SERVER_URL, HttpMethod.POST, request, AiResponse.class);
 
-            return response.getStatusCode().is2xxSuccessful() ? "SUCCESS" : "FAIL";
-        } catch (Exception e){
+            tempFile.delete();
+
+            if (response.getStatusCode().is2xxSuccessful() && response.getBody() != null && response.getBody().isSuccess()) {
+                return "SUCCESS";
+            } else {
+                log.warn("AI 서버 응답 실패: 상태={}, 본문={}", response.getStatusCode(), response.getBody());
+                return "FAIL";
+            }
+        } catch (HttpClientErrorException.NotFound e) {
+            log.error("AI 서버 엔드포인트 없음 (404): URL={}", AI_SERVER_URL, e);
+            throw new CustomException(ErrorCode.AI_SERVER_ENDPOINT_NOT_FOUND);
+        } catch (ResourceAccessException e) {
+            log.error("AI 서버 연결 실패: {}", e.getMessage(), e);
+            throw new CustomException(ErrorCode.AI_SERVER_UNREACHABLE);
+        } catch (Exception e) {
+            log.error("AI 서버 호출 실패: {}", e.getMessage(), e);
             throw new CustomException(ErrorCode.AI_SERVER_COMMUNICATION_FAILED);
         }
     }
