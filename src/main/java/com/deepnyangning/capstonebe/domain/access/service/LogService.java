@@ -1,5 +1,6 @@
 package com.deepnyangning.capstonebe.domain.access.service;
 
+import com.deepnyangning.capstonebe.domain.access.dto.AccessLogPreviewResponse;
 import com.deepnyangning.capstonebe.domain.access.dto.AccessLogResponse;
 import com.deepnyangning.capstonebe.domain.access.dto.FailLogResponse;
 import com.deepnyangning.capstonebe.domain.access.entity.AccessLog;
@@ -65,10 +66,10 @@ public class LogService {
         log.warn(message);
     }
 
-    public Page<AccessLogResponse> findAccessLogs(LocalDateTime startTime, LocalDateTime endTime,
-                                                  String identifier, String name, AuthMethod authMethod, Pageable pageable){
+    public Page<AccessLogPreviewResponse> findAccessLogs(LocalDateTime startTime, LocalDateTime endTime,
+                                                         String identifier, String name, AuthMethod authMethod, Pageable pageable){
         Specification<AccessLog> spec = AccessLogSpecification.withFilters(startTime, endTime, identifier, name, authMethod);
-        return accessLogRepository.findAll(spec, pageable).map(this::toAccessLogResponse);
+        return accessLogRepository.findAll(spec, pageable).map(accessLogMapper::toPreviewDto);
     }
 
     public AccessLogResponse findAccessLog(Long logId){
