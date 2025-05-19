@@ -1,5 +1,6 @@
 package com.deepnyangning.capstonebe.domain.studyroom.service;
 
+import com.deepnyangning.capstonebe.domain.studyroom.dto.AdminReservationResponse;
 import com.deepnyangning.capstonebe.domain.studyroom.dto.ReservationRequest;
 import com.deepnyangning.capstonebe.domain.studyroom.dto.ReservationResponse;
 import com.deepnyangning.capstonebe.domain.studyroom.dto.ReservationUpdate;
@@ -8,6 +9,7 @@ import com.deepnyangning.capstonebe.domain.studyroom.entity.StudyRoomReservation
 import com.deepnyangning.capstonebe.domain.studyroom.mapper.StudyRoomReservationMapper;
 import com.deepnyangning.capstonebe.domain.studyroom.repository.StudyRoomReservationRepository;
 import com.deepnyangning.capstonebe.domain.user.entity.User;
+import com.deepnyangning.capstonebe.domain.user.service.UserService;
 import com.deepnyangning.capstonebe.global.code.ErrorCode;
 import com.deepnyangning.capstonebe.global.exception.CustomException;
 import lombok.RequiredArgsConstructor;
@@ -27,6 +29,7 @@ public class StudyRoomReservationService {
     private final StudyRoomService studyRoomService;
     private final StudyRoomParticipantService participantService;
     private final StudyRoomReservationValidator validator;
+    private final UserService userService;
 
     @Transactional
     public ReservationResponse saveReservation(String identifier, ReservationRequest reservationRequest){
@@ -47,13 +50,14 @@ public class StudyRoomReservationService {
         return reservationMapper.toResponseDto(reservation);
     }
 
-    public List<ReservationResponse> findReservationsByStudyRoomName(String name, LocalDate cursorDate, LocalTime cursorStartTime, int size) {
+    public List<AdminReservationResponse> findReservationsByStudyRoomName(String name, LocalDate cursorDate, LocalTime cursorStartTime, int size) {
         String formattedName = (name == null || name.isBlank()) ? null : name.toUpperCase().replace(" ", "");
         List<StudyRoomReservation> reservations = reservationRepository.findByStudyRoomName(formattedName, cursorDate, cursorStartTime, size+1);
-        return reservations.stream().map(reservationMapper::toResponseDto).toList();
+        return reservations.stream().map(reservationMapper::toAdminResponse).toList();
     }
 
-    public List<ReservationResponse> findReservationsByUser(Long userId, LocalDate cursorDate, int size){
+    public List<ReservationResponse> findReservationsByUser(String identifier, LocalDate cursorDate, int size){
+        Long userId = userService.findByIdentifier(identifier).getId();
         return reservationRepository.findByUser(userId, cursorDate, size+1)
                 .stream().map(reservationMapper::toResponseDto).toList();
     }
@@ -74,11 +78,11 @@ public class StudyRoomReservationService {
     }
 
     @Transactional
-    public ReservationResponse updateReservationStatus(Long id, String status){
+    public AdminReservationResponse updateReservationStatus(Long id, String status){
         StudyRoomReservation reservation = reservationRepository.findById(id)
                 .orElseThrow(() -> new CustomException(ErrorCode.RESERVATION_NOT_FOUND));
         reservation.setStatus(ReservationStatus.valueOf(status));
-        return reservationMapper.toResponseDto(reservation);
+        return reservationMapper.toAdminResponse(reservation);
     }
 
     @Transactional

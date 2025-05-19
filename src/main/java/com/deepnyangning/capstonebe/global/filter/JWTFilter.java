@@ -72,6 +72,12 @@ public class JWTFilter extends OncePerRequestFilter {
             return;
         }
 
+        if (uri.equals("/auth/reissue")) {
+            request.setAttribute("refreshToken", token);
+        } else {
+            request.setAttribute("accessToken", token);
+        }
+
         // 사용자 정보 추출
         String identifier = jwtUtil.getSubject(token);
         UserDetails userDetails = userDetailsService.loadUserByUsername(identifier);

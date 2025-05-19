@@ -12,8 +12,10 @@ import java.util.List;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class ReservationResponse {
+public class AdminReservationResponse {
     private Long id;
+
+    private ReservationUserInfo userInfo;
 
     private StudyRoomSimpleResponse studyRoom;
 

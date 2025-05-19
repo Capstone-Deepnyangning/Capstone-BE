@@ -12,10 +12,10 @@ import java.time.LocalDateTime;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class AccessLogResponse {
+public class AccessLogPreviewResponse {
     private Long id;
 
-    private AccessLogUserInfo userInfo;
+    private String identifier;
 
     private AccessType accessType;
 
@@ -23,6 +23,4 @@ public class AccessLogResponse {
 
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime accessTime;
-
-    private double similarity;
 }

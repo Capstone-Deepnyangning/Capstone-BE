@@ -1,9 +1,6 @@
 package com.deepnyangning.capstonebe.domain.studyroom.controller;
 
-import com.deepnyangning.capstonebe.domain.studyroom.dto.ParticipantRequest;
-import com.deepnyangning.capstonebe.domain.studyroom.dto.ReservationRequest;
-import com.deepnyangning.capstonebe.domain.studyroom.dto.ReservationResponse;
-import com.deepnyangning.capstonebe.domain.studyroom.dto.ReservationUpdate;
+import com.deepnyangning.capstonebe.domain.studyroom.dto.*;
 import com.deepnyangning.capstonebe.domain.studyroom.service.StudyRoomParticipantService;
 import com.deepnyangning.capstonebe.domain.studyroom.service.StudyRoomReservationService;
 import com.deepnyangning.capstonebe.global.response.ApiResponse;
@@ -40,7 +37,6 @@ public class StudyRoomReservationController {
         String message = exists ? "존재하는 사용자입니다." : "일치하는 사용자가 존재하지 않습니다.";
         return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.<Boolean>builder().result(exists).success(true).code(200).message(message).build());
     }
-    // participantResponse로 응답하는 거 고려하기
 
     @PostMapping("/studyrooms/reservations")
     public ResponseEntity<ApiResponse<ReservationResponse>> createStudyRoomReservation(@AuthenticationPrincipal UserDetails userDetails, @RequestBody ReservationRequest reservationRequest){
@@ -50,11 +46,12 @@ public class StudyRoomReservationController {
                 .body(ApiResponse.<ReservationResponse>builder().result(reservationResponse).success(true).code(201).message("스터디룸 예약에 성공했습니다.").build());
     }
 
-    @GetMapping("/studyrooms/reservations/users/{userId}")
-    public ResponseEntity<ApiResponse<CursorPage<ReservationResponse>>> getStudyRoomReservationsByUser(@PathVariable Long userId,
+    @GetMapping("/studyrooms/reservations/my")
+    public ResponseEntity<ApiResponse<CursorPage<ReservationResponse>>> getStudyRoomReservationsByUser(@AuthenticationPrincipal UserDetails userDetails,
                                                                                                        @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate cursorDate,
                                                                                                        @RequestParam(defaultValue = "7") int size){
-        List<ReservationResponse> response = reservationService.findReservationsByUser(userId, cursorDate, size);
+        String identifier = userDetails.getUsername();
+        List<ReservationResponse> response = reservationService.findReservationsByUser(identifier, cursorDate, size);
         return ResponseEntity.status(HttpStatus.OK)
                 .body(ApiResponse.<CursorPage<ReservationResponse>>builder().result(CursorPage.of(response, size)).success(true).code(200).message("사용자별 스터디룸 예약 조회에 성공했습니다.").build());
     }
@@ -81,19 +78,19 @@ public class StudyRoomReservationController {
     }
 
     @GetMapping("/admin/studyrooms/reservations")
-    public ResponseEntity<ApiResponse<CursorPage<ReservationResponse>>> getStudyRoomReservations(@RequestParam(required = false) String name,
-                                                                                                 @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate cursorDate,
-                                                                                                 @RequestParam(required = false) @DateTimeFormat(pattern = "HH:mm") LocalTime cursorStartTime,
-                                                                                                 @RequestParam(defaultValue = "7") int size){
-        List<ReservationResponse> response = reservationService.findReservationsByStudyRoomName(name, cursorDate, cursorStartTime, size);
+    public ResponseEntity<ApiResponse<CursorPage<AdminReservationResponse>>> getStudyRoomReservations(@RequestParam(required = false) String name,
+                                                                                                      @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate cursorDate,
+                                                                                                      @RequestParam(required = false) @DateTimeFormat(pattern = "HH:mm") LocalTime cursorStartTime,
+                                                                                                      @RequestParam(defaultValue = "7") int size){
+        List<AdminReservationResponse> response = reservationService.findReservationsByStudyRoomName(name, cursorDate, cursorStartTime, size);
         return ResponseEntity.status(HttpStatus.OK)
-                .body(ApiResponse.<CursorPage<ReservationResponse>>builder().result(CursorPage.of(response, size)).success(true).code(200).message("스터디룸 예약 전체 조회에 성공했습니다.").build());
+                .body(ApiResponse.<CursorPage<AdminReservationResponse>>builder().result(CursorPage.of(response, size)).success(true).code(200).message("스터디룸 예약 전체 조회에 성공했습니다.").build());
     }
 
     @PutMapping("/admin/studyrooms/reservations/{reservationId}")
-    public ResponseEntity<ApiResponse<ReservationResponse>> updateStudyRoomReservationStatus(@PathVariable Long reservationId, @RequestParam String status){
-        ReservationResponse reservationResponse = reservationService.updateReservationStatus(reservationId, status);
+    public ResponseEntity<ApiResponse<AdminReservationResponse>> updateStudyRoomReservationStatus(@PathVariable Long reservationId, @RequestParam String status){
+        AdminReservationResponse reservationResponse = reservationService.updateReservationStatus(reservationId, status);
         return ResponseEntity.status(HttpStatus.OK)
-                .body(ApiResponse.<ReservationResponse>builder().result(reservationResponse).success(true).code(200).message("스터디룸 예약 상태 변경에 성공했습니다.").build());
+                .body(ApiResponse.<AdminReservationResponse>builder().result(reservationResponse).success(true).code(200).message("스터디룸 예약 상태 변경에 성공했습니다.").build());
     }
 }

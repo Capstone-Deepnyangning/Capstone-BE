@@ -1,5 +1,6 @@
 package com.deepnyangning.capstonebe.domain.access.service;
 
+import com.deepnyangning.capstonebe.domain.access.dto.AccessLogPreviewResponse;
 import com.deepnyangning.capstonebe.domain.access.dto.AccessLogResponse;
 import com.deepnyangning.capstonebe.domain.access.dto.FailLogResponse;
 import com.deepnyangning.capstonebe.domain.access.entity.AccessLog;
@@ -33,7 +34,6 @@ import java.time.LocalDateTime;
 public class LogService {
     private final AccessLogRepository accessLogRepository;
     private final FailLogRepository failLogRepository;
-    private final UserMapper userMapper;
     private final AccessLogMapper accessLogMapper;
     private final FailLogMapper failLogMapper;
 
@@ -65,26 +65,20 @@ public class LogService {
         log.warn(message);
     }
 
-    public Page<AccessLogResponse> findAccessLogs(LocalDateTime startTime, LocalDateTime endTime,
-                                                  String identifier, String name, AuthMethod authMethod, Pageable pageable){
+    public Page<AccessLogPreviewResponse> findAccessLogs(LocalDateTime startTime, LocalDateTime endTime,
+                                                         String identifier, String name, AuthMethod authMethod, Pageable pageable){
         Specification<AccessLog> spec = AccessLogSpecification.withFilters(startTime, endTime, identifier, name, authMethod);
-        return accessLogRepository.findAll(spec, pageable).map(this::toAccessLogResponse);
+        return accessLogRepository.findAll(spec, pageable).map(accessLogMapper::toPreviewDto);
     }
 
     public AccessLogResponse findAccessLog(Long logId){
-        return toAccessLogResponse(accessLogRepository.findById(logId)
+        return accessLogMapper.toResponseDto(accessLogRepository.findById(logId)
                 .orElseThrow(() -> new CustomException(ErrorCode.ACCESS_LOG_NOT_FOUND)));
     }
 
     public Page<FailLogResponse> findFailLogs(LocalDateTime startTime, LocalDateTime endTime, AuthMethod authMethod, Pageable pageable){
         Specification<FailLog> spec = FailLogSpecification.withFilters(startTime, endTime, authMethod);
         return failLogRepository.findAll(spec, pageable).map(failLogMapper::toResponseDto);
-    }
-
-    private AccessLogResponse toAccessLogResponse(AccessLog accessLog){
-        AccessLogResponse dto = accessLogMapper.toResponseDto(accessLog);
-        dto.setUserInfo(userMapper.toAccessLogUserInfo(accessLog.getUser()));
-        return dto;
     }
 
     public LocalDateTime findLatestEntryTime(User user){

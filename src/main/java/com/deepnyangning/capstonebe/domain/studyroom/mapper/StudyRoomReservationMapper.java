@@ -1,14 +1,16 @@
 package com.deepnyangning.capstonebe.domain.studyroom.mapper;
 
+import com.deepnyangning.capstonebe.domain.studyroom.dto.AdminReservationResponse;
 import com.deepnyangning.capstonebe.domain.studyroom.dto.ReservationRequest;
 import com.deepnyangning.capstonebe.domain.studyroom.dto.ReservationResponse;
 import com.deepnyangning.capstonebe.domain.studyroom.dto.ReservationUpdate;
 import com.deepnyangning.capstonebe.domain.studyroom.entity.StudyRoomReservation;
+import com.deepnyangning.capstonebe.domain.user.mapper.UserMapper;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 
-@Mapper(componentModel = "spring", uses = {StudyRoomMapper.class, StudyRoomParticipantMapper.class})
+@Mapper(componentModel = "spring", uses = {StudyRoomMapper.class, StudyRoomParticipantMapper.class, UserMapper.class})
 public interface StudyRoomReservationMapper {
     @Mapping(target = "studyRoom", ignore = true)
     @Mapping(target = "user", ignore = true)
@@ -16,7 +18,6 @@ public interface StudyRoomReservationMapper {
     StudyRoomReservation toEntity(ReservationRequest reservationRequest);
 
     @Mapping(source = "studyRoom", target = "studyRoom")
-    @Mapping(source = "user.id", target = "userId")
     @Mapping(source = "participants", target = "participants")
     ReservationResponse toResponseDto(StudyRoomReservation studyRoomReservation);
 
@@ -25,4 +26,9 @@ public interface StudyRoomReservationMapper {
     @Mapping(target = "status", ignore = true)
     @Mapping(target = "participants", ignore = true)
     void update(@MappingTarget StudyRoomReservation reservation, ReservationUpdate update);
+
+    @Mapping(source = "studyRoom", target = "studyRoom")
+    @Mapping(source = "participants", target = "participants")
+    @Mapping(source = "user", target = "userInfo")
+    AdminReservationResponse toAdminResponse(StudyRoomReservation studyRoomReservation);
 }
