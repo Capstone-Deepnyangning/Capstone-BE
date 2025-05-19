@@ -20,8 +20,6 @@ import java.util.List;
 public class ReservationRequest {
     private Long studyRoomId;
 
-    private Long userId;
-
     @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate date;
 
