@@ -26,7 +26,6 @@ public class AccessService {
     private final LogService logService;
     private final QRService qrService;
     private final StatisticsService statisticsService;
-    private final NotificationService notificationService;
     private final ApplicationEventPublisher eventPublisher;
 
     @Transactional

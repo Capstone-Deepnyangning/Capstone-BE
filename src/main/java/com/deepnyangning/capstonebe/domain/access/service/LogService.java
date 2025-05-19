@@ -34,7 +34,6 @@ import java.time.LocalDateTime;
 public class LogService {
     private final AccessLogRepository accessLogRepository;
     private final FailLogRepository failLogRepository;
-    private final UserMapper userMapper;
     private final AccessLogMapper accessLogMapper;
     private final FailLogMapper failLogMapper;
 
@@ -73,19 +72,13 @@ public class LogService {
     }
 
     public AccessLogResponse findAccessLog(Long logId){
-        return toAccessLogResponse(accessLogRepository.findById(logId)
+        return accessLogMapper.toResponseDto(accessLogRepository.findById(logId)
                 .orElseThrow(() -> new CustomException(ErrorCode.ACCESS_LOG_NOT_FOUND)));
     }
 
     public Page<FailLogResponse> findFailLogs(LocalDateTime startTime, LocalDateTime endTime, AuthMethod authMethod, Pageable pageable){
         Specification<FailLog> spec = FailLogSpecification.withFilters(startTime, endTime, authMethod);
         return failLogRepository.findAll(spec, pageable).map(failLogMapper::toResponseDto);
-    }
-
-    private AccessLogResponse toAccessLogResponse(AccessLog accessLog){
-        AccessLogResponse dto = accessLogMapper.toResponseDto(accessLog);
-        dto.setUserInfo(userMapper.toAccessLogUserInfo(accessLog.getUser()));
-        return dto;
     }
 
     public LocalDateTime findLatestEntryTime(User user){
