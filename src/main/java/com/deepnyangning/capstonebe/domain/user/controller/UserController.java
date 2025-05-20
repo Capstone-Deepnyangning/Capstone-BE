@@ -5,6 +5,7 @@ import com.deepnyangning.capstonebe.domain.user.dto.UserResponse;
 import com.deepnyangning.capstonebe.domain.user.mapper.UserMapper;
 import com.deepnyangning.capstonebe.domain.user.service.UserService;
 import com.deepnyangning.capstonebe.global.response.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -16,7 +17,8 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/users")
-public class UserController {
+@Tag(name = "마이페이지 API")
+public class UserController implements UserControllerDocs {
     private final UserService userService;
     private final UserMapper userMapper;
 
