@@ -84,7 +84,7 @@ public interface StudyRoomReservationControllerDocs {
                     - `endTime` : 예약 종료 시간 (예: "15:00")
                     - `purpose` : 예약 목적 (예: "스터디")
                     - `participants` : 동반 이용자 리스트
-                        - `identifier` : 사용자 식별자 (예: "21011806")
+                        - `identifier` : 사용자 학번 (예: "21011806")
                         - `name` : 사용자 이름 (예: "정윤장")
                         - `date` : 이용 날짜 (예: "2025-05-20")
                     
@@ -110,7 +110,7 @@ public interface StudyRoomReservationControllerDocs {
                             - `status`: 예약 상태 (예: "CONFIRMED")
                             - `purpose`: 예약 목적 (예: "스터디")
                             - `participants`: 동반 이용자 리스트
-                                - `identifier`: 사용자 식별자 (예: "21011806")
+                                - `identifier`: 사용자 학번 (예: "21011806")
                                 - `name`: 사용자 이름 (예: "정윤장")
                                 - `date`: 이용 날짜 (예: "2025-05-20")
                     """
@@ -159,7 +159,7 @@ public interface StudyRoomReservationControllerDocs {
                             - `status`: 예약 상태 (예: "CONFIRMED")
                             - `purpose`: 예약 목적 (예: "스터디")
                             - `participants`: 동반 이용자 리스트
-                                - `identifier`: 사용자 식별자 (예: "21011806")
+                                - `identifier`: 사용자 학번 (예: "21011806")
                                 - `name`: 사용자 이름 (예: "정윤장")
                                 - `date`: 이용 날짜 (예: "2025-05-20")
                     """
@@ -207,7 +207,7 @@ public interface StudyRoomReservationControllerDocs {
                             - `status`: 예약 상태 (예: "CONFIRMED")
                             - `purpose`: 예약 목적 (예: "스터디")
                             - `participants`: 동반 이용자 리스트
-                                - `identifier`: 사용자 식별자 (예: "21011806")
+                                - `identifier`: 사용자 학번 (예: "21011806")
                                 - `name`: 사용자 이름 (예: "정윤장")
                                 - `date`: 이용 날짜 (예: "2025-05-20")
                     """
@@ -240,7 +240,7 @@ public interface StudyRoomReservationControllerDocs {
                     - `endTime` : 예약 종료 시간 (예: "15:00")
                     - `purpose` : 예약 목적 (예: "스터디")
                     - `participants` : 동반 이용자 리스트
-                        - `identifier` : 사용자 식별자 (예: "21011806")
+                        - `identifier` : 사용자 학번 (예: "21011806")
                         - `name` : 사용자 이름 (예: "정윤장")
                         - `date` : 이용 날짜 (예: "2025-05-20")
                     
@@ -266,7 +266,7 @@ public interface StudyRoomReservationControllerDocs {
                             - `status`: 예약 상태 (예: "CONFIRMED")
                             - `purpose`: 예약 목적 (예: "스터디")
                             - `participants`: 동반 이용자 리스트
-                                - `identifier`: 사용자 식별자 (예: "21011806")
+                                - `identifier`: 사용자 학번 (예: "21011806")
                                 - `name`: 사용자 이름 (예: "정윤장")
                                 - `date`: 이용 날짜 (예: "2025-05-20")
                     """
@@ -336,7 +336,7 @@ public interface StudyRoomReservationControllerDocs {
                         - `result`: 예약 정보 목록
                             - `id`: 예약 ID (예: 10)
                             - `userInfo`: 예약한 사용자 정보
-                                - `identifier`: 사용자 식별자 (예: "21011805")
+                                - `identifier`: 사용자 학번 (예: "21011805")
                                 - `name`: 사용자 이름 (예: "장윤정")
                             - `studyRoom`: 스터디룸 정보
                                 - `id`: 스터디룸 ID (예: 3)
@@ -350,7 +350,7 @@ public interface StudyRoomReservationControllerDocs {
                             - `status`: 예약 상태 (예: "CONFIRMED")
                             - `purpose`: 예약 목적 (예: "스터디")
                             - `participants`: 동반 이용자 리스트
-                                - `identifier`: 사용자 식별자 (예: "21011806")
+                                - `identifier`: 사용자 학번 (예: "21011806")
                                 - `name`: 사용자 이름 (예: "정윤장")
                                 - `date`: 이용 날짜 (예: "2025-05-20")
                     """
@@ -395,7 +395,7 @@ public interface StudyRoomReservationControllerDocs {
                         - `result`: 예약 상태 변경된 예약 정보
                             - `id`: 예약 ID (예: 10)
                             - `userInfo`: 예약한 사용자 정보
-                                - `identifier`: 사용자 식별자 (예: "21011805")
+                                - `identifier`: 사용자 학번 (예: "21011805")
                                 - `name`: 사용자 이름 (예: "장윤정")
                             - `studyRoom`: 스터디룸 정보
                                 - `id`: 스터디룸 ID (예: 3)
@@ -409,7 +409,7 @@ public interface StudyRoomReservationControllerDocs {
                             - `status`: 예약 상태 (예: "CANCELED")
                             - `purpose`: 예약 목적 (예: "스터디")
                             - `participants`: 동반 이용자 리스트
-                                - `identifier`: 사용자 식별자 (예: "21011806")
+                                - `identifier`: 사용자 학번 (예: "21011806")
                                 - `name`: 사용자 이름 (예: "정윤장")
                                 - `date`: 이용 날짜 (예: "2025-05-20")
                     """

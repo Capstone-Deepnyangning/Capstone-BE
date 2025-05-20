@@ -27,8 +27,8 @@ public interface CongestionControllerDocs {
                         - `code`: HTTP 상태 코드 (200)
                         - `message`: "혼잡도 조회에 성공했습니다."
                         - `result`: 혼잡도 데이터
-                          - `currentUsers`: 현재 이용자 수
-                          - `avgUsers`: 평균 이용자 수
+                          - `currentUsers`: 현재 이용자 수 (예: 503)
+                          - `avgUsers`: 평균 이용자 수 (예: 452)
                     """
     )
     public ResponseEntity<ApiResponse<CongestionResponse>> getCongestionData();

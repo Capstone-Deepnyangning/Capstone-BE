@@ -1,6 +1,5 @@
 package com.deepnyangning.capstonebe.domain.user.dto;
 
-import com.deepnyangning.capstonebe.domain.user.entity.Role;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
