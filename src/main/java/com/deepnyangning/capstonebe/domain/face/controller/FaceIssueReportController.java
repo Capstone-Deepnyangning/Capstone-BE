@@ -3,6 +3,7 @@ package com.deepnyangning.capstonebe.domain.face.controller;
 import com.deepnyangning.capstonebe.domain.face.dto.FaceIssueReportResponse;
 import com.deepnyangning.capstonebe.domain.face.service.FaceIssueReportService;
 import com.deepnyangning.capstonebe.global.response.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -16,7 +17,8 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api")
-public class FaceIssueReportController {
+@Tag(name = "안면 인식 문제 신고 API")
+public class FaceIssueReportController implements FaceIssueReportControllerDocs {
     private final FaceIssueReportService faceIssueReportService;
 
     @PostMapping("/reports")
