@@ -3,6 +3,7 @@ package com.deepnyangning.capstonebe.domain.statistics.controller;
 import com.deepnyangning.capstonebe.domain.statistics.dto.CongestionResponse;
 import com.deepnyangning.capstonebe.domain.statistics.service.CongestionService;
 import com.deepnyangning.capstonebe.global.response.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,7 +14,8 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/congestion")
-public class CongestionController {
+@Tag(name = "혼잡도 조회 API")
+public class CongestionController implements CongestionControllerDocs {
     private final CongestionService congestionService;
 
     @GetMapping
