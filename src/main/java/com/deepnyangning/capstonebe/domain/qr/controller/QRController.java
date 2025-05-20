@@ -2,6 +2,7 @@ package com.deepnyangning.capstonebe.domain.qr.controller;
 
 import com.deepnyangning.capstonebe.domain.qr.service.QRService;
 import com.deepnyangning.capstonebe.global.response.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,7 +16,8 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/qr")
-public class QRController {
+@Tag(name = "QR 생성 API")
+public class QRController implements QRControllerDocs {
     private final QRService qrService;
 
     @PostMapping("/generate")

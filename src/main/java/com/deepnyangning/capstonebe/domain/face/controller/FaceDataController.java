@@ -2,6 +2,7 @@ package com.deepnyangning.capstonebe.domain.face.controller;
 
 import com.deepnyangning.capstonebe.domain.face.service.FaceDataService;
 import com.deepnyangning.capstonebe.global.response.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -17,7 +18,8 @@ import org.springframework.web.multipart.MultipartFile;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/faces")
-public class FaceDataController {
+@Tag(name = "얼굴 등록 API")
+public class FaceDataController implements FaceDataControllerDocs {
     private final FaceDataService faceDataService;
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)

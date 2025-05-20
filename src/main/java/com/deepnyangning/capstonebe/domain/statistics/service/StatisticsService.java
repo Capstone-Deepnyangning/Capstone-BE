@@ -41,8 +41,7 @@ public class StatisticsService {
                 .stream().map(dailyStayMapper::toResponseDto).toList();
         float weeklyAvg = (float) weeklyStays.stream()
                 .mapToInt(DailyStayResponse::getStayMinutes)
-                .average()
-                .orElse(0.0);
+                .sum() / 7f;
         double globalAvg = getGlobalStayAvg(startDate);
 
         return WeeklyStatResponse.builder()

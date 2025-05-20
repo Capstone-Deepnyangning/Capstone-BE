@@ -5,6 +5,7 @@ import com.deepnyangning.capstonebe.domain.studyroom.service.StudyRoomParticipan
 import com.deepnyangning.capstonebe.domain.studyroom.service.StudyRoomReservationService;
 import com.deepnyangning.capstonebe.global.response.ApiResponse;
 import com.deepnyangning.capstonebe.global.response.CursorPage;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -25,7 +26,8 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api")
-public class StudyRoomReservationController {
+@Tag(name = "스터디룸 예약 API")
+public class StudyRoomReservationController implements StudyRoomReservationControllerDocs {
     private final StudyRoomReservationService reservationService;
     private final StudyRoomParticipantService participantService;
 

@@ -6,6 +6,7 @@ import com.deepnyangning.capstonebe.domain.access.dto.FailLogResponse;
 import com.deepnyangning.capstonebe.domain.access.entity.AuthMethod;
 import com.deepnyangning.capstonebe.domain.access.service.LogService;
 import com.deepnyangning.capstonebe.global.response.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -20,7 +21,8 @@ import java.time.LocalDateTime;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/admin/logs")
-public class LogController {
+@Tag(name = "관리자 로그 조회 API")
+public class LogController implements LogControllerDocs {
     private final LogService logService;
 
     @GetMapping

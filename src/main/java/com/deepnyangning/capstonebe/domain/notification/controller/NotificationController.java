@@ -3,6 +3,7 @@ package com.deepnyangning.capstonebe.domain.notification.controller;
 import com.deepnyangning.capstonebe.domain.notification.dto.FcmTokenRequest;
 import com.deepnyangning.capstonebe.domain.notification.service.NotificationService;
 import com.deepnyangning.capstonebe.global.response.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,7 +14,8 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/notifications")
-public class NotificationController {
+@Tag(name = "푸시 알림 API")
+public class NotificationController implements NotificationControllerDocs {
     private final NotificationService notificationService;
 
     @PostMapping("/tokens")

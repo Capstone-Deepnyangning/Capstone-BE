@@ -6,6 +6,7 @@ import com.deepnyangning.capstonebe.domain.user.dto.LoginResponse;
 import com.deepnyangning.capstonebe.domain.user.dto.SignupRequest;
 import com.deepnyangning.capstonebe.domain.user.service.AuthService;
 import com.deepnyangning.capstonebe.global.response.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -17,7 +18,8 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/auth")
-public class AuthController {
+@Tag(name = "사용자 인증 API")
+public class AuthController implements AuthControllerDocs {
     private final AuthService authService;
 
     @PostMapping("/signup")
