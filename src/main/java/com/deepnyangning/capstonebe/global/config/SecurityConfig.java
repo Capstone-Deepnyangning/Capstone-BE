@@ -80,7 +80,7 @@ public class SecurityConfig {
                                 "/webjars/**",
                                 "/actuator/health",
                                 "/auth/login", "/auth/signup",
-                                "/api/access/**", "/error"
+                                "/api/access/face", "/api/access/qr", "/error"
                                 ).permitAll()
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
                         .anyRequest().authenticated()

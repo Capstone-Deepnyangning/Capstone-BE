@@ -36,7 +36,7 @@ public class JWTFilter extends OncePerRequestFilter {
 
         // 예외 URI 목록
         List<String> permitAllUris = Arrays.asList(
-                "/api/access/", "/v3/api-docs/", "/swagger-ui/", "/swagger-ui.html",
+                "/api/access/qr", "/api/access/face", "/v3/api-docs/", "/swagger-ui/", "/swagger-ui.html",
                 "/swagger-resources/", "/webjars/", "/actuator/health", "/auth/login", "/auth/signup"
         );
 
