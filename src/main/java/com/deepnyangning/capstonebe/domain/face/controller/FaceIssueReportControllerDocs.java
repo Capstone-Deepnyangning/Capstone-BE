@@ -93,7 +93,7 @@ public interface FaceIssueReportControllerDocs {
                         
                         
                                                        
-                    **요청 파라미터**
+                    **요청 경로 변수**
                                     
                     - `reportId` : 조회할 신고 ID (예: 5)
                           

@@ -81,7 +81,7 @@ public interface LogControllerDocs {
                           
                           
                                    
-                    **요청 파라미터**
+                    **요청 경로 변수**
                                     
                     - `Long logId` : 출입 로그 ID
                         
@@ -117,14 +117,17 @@ public interface LogControllerDocs {
                     **요청 헤더**
                                     
                     - `Authorization: Bearer {accessToken}` : 사용자의 인증 정보를 추출하기 위해 accessToken을 헤더에 포함해야 합니다.
+                       
                     
-                    
-                                    
-                    **요청 파라미터**
-                                    
-                    - `Long logId` : 출입 로그 ID
                         
-                                    
+                    **요청 파라미터**
+                    - `LocalDateTime startTime` : 시작 시간 (옵션)
+                    - `LocalDateTime endTime` : 종료 시간 (옵션)
+                    - `AuthMethod authMethod` : 인증 방식 ("FACE" or "QR") (옵션)
+                    - `int page` : 페이지 번호 (기본값: 0)
+                    - `int size` : 페이지 크기 (기본값: 7)        
+                    
+                    
                     
                     **응답**
                     

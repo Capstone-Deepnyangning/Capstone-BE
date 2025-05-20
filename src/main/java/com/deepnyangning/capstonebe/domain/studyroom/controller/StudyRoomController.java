@@ -6,6 +6,7 @@ import com.deepnyangning.capstonebe.domain.studyroom.mapper.StudyRoomMapper;
 import com.deepnyangning.capstonebe.domain.studyroom.service.StudyRoomService;
 import com.deepnyangning.capstonebe.global.response.ApiResponse;
 import com.deepnyangning.capstonebe.global.response.CursorPage;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -24,7 +25,8 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api")
-public class StudyRoomController {
+@Tag(name = "스터디룸 조회 API")
+public class StudyRoomController implements StudyRoomControllerDocs {
     private final StudyRoomService studyRoomService;
     private final StudyRoomMapper studyRoomMapper;
 
@@ -54,6 +56,6 @@ public class StudyRoomController {
         }
         List<StudyRoomResponse> response = studyRoomService.findAvailableStudyRooms(date, startTime, endTime, cursorName, size);
         return ResponseEntity.status(HttpStatus.OK)
-                .body(ApiResponse.<CursorPage<StudyRoomResponse>>builder().result(CursorPage.of(response, size)).success(true).code(200).message("스터디룸 조회에 성공했습니다.").build());
+                .body(ApiResponse.<CursorPage<StudyRoomResponse>>builder().result(CursorPage.of(response, size)).success(true).code(200).message("예약 가능한 스터디룸 목록 조회에 성공했습니다.").build());
     }
 }
