@@ -20,7 +20,7 @@ public interface FaceDataControllerDocs {
                     
                     **요청 헤더**
                                     
-                    - `Authorization: Bearer {accessToken}` : 사용자의 인증 정보를 추출하기 위해 accessToken을 헤더에 포함해야 합니다.
+                    - `Authorization: Bearer {accessToken}` : 사용자 인증을 위해 accessToken을 헤더에 포함해야 합니다.
                     
                          
                                     
