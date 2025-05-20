@@ -6,6 +6,7 @@ import com.deepnyangning.capstonebe.domain.access.dto.QrAccessRequest;
 import com.deepnyangning.capstonebe.domain.access.entity.AccessType;
 import com.deepnyangning.capstonebe.domain.access.service.AccessService;
 import com.deepnyangning.capstonebe.global.response.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -18,7 +19,8 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/access")
-public class AccessController {
+@Tag(name = "출입 인증 요청 API")
+public class AccessController implements AccessControllerDocs {
     private final AccessService accessService;
 
     @PostMapping("/qr")
