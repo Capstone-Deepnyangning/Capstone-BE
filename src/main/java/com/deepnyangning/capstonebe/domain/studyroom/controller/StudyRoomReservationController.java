@@ -18,6 +18,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
@@ -67,6 +68,10 @@ public class StudyRoomReservationController implements StudyRoomReservationContr
 
     @GetMapping("/studyrooms/reservations/available-time")
     public ResponseEntity<ApiResponse<List<AvailableTimeOption>>> getStudyRoomReservationAvailableTimes(@RequestParam Long studyRoomId, @RequestParam LocalDate date){
+        if(date.getDayOfWeek() == DayOfWeek.SUNDAY){
+            return ResponseEntity.status(HttpStatus.OK)
+                    .body(ApiResponse.<List<AvailableTimeOption>>builder().result(List.of()).success(true).code(200).message("일요일은 스터디룸이 운영되지 않습니다.").build());
+        }
         List<AvailableTimeOption> response = reservationService.findAvailableTimes(studyRoomId, date);
         return ResponseEntity.status(HttpStatus.OK)
                 .body(ApiResponse.<List<AvailableTimeOption>>builder().result(response).success(true).code(200).message("스터디룸별 예약 가능한 시간 조회에 성공했습니다.").build());

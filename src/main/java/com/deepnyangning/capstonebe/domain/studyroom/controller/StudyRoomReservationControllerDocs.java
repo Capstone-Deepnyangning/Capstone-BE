@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.List;
 
 public interface StudyRoomReservationControllerDocs {
     @Operation(
@@ -213,6 +214,36 @@ public interface StudyRoomReservationControllerDocs {
                     """
     )
     ResponseEntity<ApiResponse<ReservationResponse>> getStudyRoomReservation(@PathVariable Long reservationId);
+
+    @Operation(
+            summary = "스터디룸 예약 가능 시간 조회 API",
+            description = """
+                **스터디룸 예약 가능 시간 조회**
+                                            
+                특정 스터디룸에 대해 특정 날짜의 예약 가능한 시간 목록을 조회합니다. \s
+                1시간 또는 2시간 단위 예약이 가능하며, 기존 예약과 겹치지 않는 시간만 제공됩니다. \s
+                예약 가능한 시간은 평일 10:00~21:00, 토요일 10:00~16:00 사이입니다. \s
+                일요일은 예약이 불가능하여 빈 목록을 반환합니다.
+                
+                **요청 파라미터**
+                                
+                - `studyRoomId (Long)` : 조회할 스터디룸 ID (예: 3)
+                - `date (yyyy-MM-dd)` : 조회할 날짜 (예: "2025-05-20")
+                
+                **응답**
+                                
+                - `ApiResponse<List<AvailableTimeOption>>`
+                    - `success`: true
+                    - `code`: HTTP 상태 코드 (200)
+                    - `message`: "스터디룸별 예약 가능한 시간 조회에 성공했습니다." 또는 "일요일은 스터디룸이 운영되지 않습니다."
+                    - `result`: 예약 가능한 시간 정보 목록
+                        - `start`: 시작 가능한 시각 (예: "10:00")
+                        - `end`: 해당 시작 시각 기준으로 예약 가능한 종료 시각 목록 (예: ["11:00", "12:00"])
+                """
+    )
+    ResponseEntity<ApiResponse<List<AvailableTimeOption>>> getStudyRoomReservationAvailableTimes(
+            @RequestParam Long studyRoomId,
+            @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate date);
 
     @Operation(
             summary = "스터디룸 예약 정보 수정 API",

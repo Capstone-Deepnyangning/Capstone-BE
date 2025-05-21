@@ -70,6 +70,9 @@ public class StudyRoomReservationService {
     }
 
     public List<AvailableTimeOption> findAvailableTimes(Long studyRoomId, LocalDate date){
+        if(date.getDayOfWeek() == DayOfWeek.SUNDAY){
+            return List.of();
+        }
         StudyRoom studyRoom = studyRoomService.findStudyRoomById(studyRoomId);
         List<StudyRoomReservation> reservations = reservationRepository.findByStudyRoomAndDateAndStatusNot(studyRoom, date, ReservationStatus.CANCELED);
 
