@@ -12,7 +12,7 @@ public interface CongestionControllerDocs {
                     **도서관 혼잡도 조회**
                                     
                     조회 요청 시간 기준의 혼잡도 데이터를 조회합니다. \s
-                    현재 도서관 이용자 수와 최근 일주일 간의 평균 이용자 수 정보가 제공됩니다.
+                    현재 도서관 이용자 수와 최근 일주일 간의 평균 이용자 수 정보와 함께 메시지가 제공됩니다.
                                                        
                     **요청 헤더**
                                     
@@ -29,6 +29,7 @@ public interface CongestionControllerDocs {
                         - `result`: 혼잡도 데이터
                           - `currentUsers`: 현재 이용자 수 (예: 503)
                           - `avgUsers`: 평균 이용자 수 (예: 452)
+                          - `message`: 혼잡도 메시지 (예: "평균보다 +11% 많음 (약간 혼잡)")
                     """
     )
     public ResponseEntity<ApiResponse<CongestionResponse>> getCongestionData();

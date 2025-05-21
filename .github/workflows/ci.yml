@@ -61,6 +61,9 @@ jobs:
             firebase:
               project-id: capstone-dnn-bfa9f
               key-path: ./src/main/resources/firebase/serviceAccountKey.json
+          
+            ai:
+              server-url: ${{ secrets.AI_SERVER_URL }}"
             EOF
 
       - name: Decode Firebase service account key

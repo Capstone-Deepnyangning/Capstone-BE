@@ -5,6 +5,7 @@ import com.deepnyangning.capstonebe.global.code.ErrorCode;
 import com.deepnyangning.capstonebe.global.exception.CustomException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.http.*;
@@ -23,7 +24,8 @@ import java.util.List;
 @Component
 @RequiredArgsConstructor
 public class AiServerClient {
-    private static final String AI_SERVER_URL = "https://efba-116-44-51-91.ngrok-free.app";
+    @Value("${ai.server-url}")
+    private String AI_SERVER_URL;
     private final RestTemplate restTemplate;
 
 
@@ -59,6 +61,38 @@ public class AiServerClient {
                 log.warn("AI 서버 응답 실패: 상태={}, 본문={}", response.getStatusCode(), response.getBody());
                 return "FAIL";
             }
+        } catch (HttpClientErrorException.NotFound e) {
+            log.error("AI 서버 엔드포인트 없음 (404): URL={}", url, e);
+            throw new CustomException(ErrorCode.AI_SERVER_ENDPOINT_NOT_FOUND);
+        } catch (ResourceAccessException e) {
+            log.error("AI 서버 연결 실패: {}", e.getMessage(), e);
+            throw new CustomException(ErrorCode.AI_SERVER_UNREACHABLE);
+        } catch (Exception e) {
+            log.error("AI 서버 호출 실패: {}", e.getMessage(), e);
+            throw new CustomException(ErrorCode.AI_SERVER_COMMUNICATION_FAILED);
+        }
+    }
+
+    public void sendDeleteFaceToAiServer(String identifier, boolean removeFolder){
+        String url = AI_SERVER_URL + "/delete_face";
+        try {
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.MULTIPART_FORM_DATA);
+
+            MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
+            body.add("identifier", identifier);
+            body.add("remove_folder", String.valueOf(removeFolder)); // true 또는 false 문자열로 전달
+
+            HttpEntity<MultiValueMap<String, Object>> request = new HttpEntity<>(body, headers);
+
+            ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.POST, request, String.class);
+
+            if (response.getStatusCode().is2xxSuccessful()) {
+                log.info("AI 서버 얼굴 삭제 요청 성공: {}", response.getBody());
+            } else {
+                log.warn("AI 서버 얼굴 삭제 실패: 상태={}, 응답={}", response.getStatusCode(), response.getBody());
+            }
+
         } catch (HttpClientErrorException.NotFound e) {
             log.error("AI 서버 엔드포인트 없음 (404): URL={}", url, e);
             throw new CustomException(ErrorCode.AI_SERVER_ENDPOINT_NOT_FOUND);

@@ -57,6 +57,9 @@ jobs:
       - name: Generate application.yml
         run: |
           echo "${{ secrets.APPLICATION_YML_CONTENT }}" > application.yml
+          echo "" >> application.yml
+          echo "ai:" >> application.yml
+          echo "  server-url: ${{ secrets.AI_SERVER_URL }}" >> application.yml
           ls -la application.yml
 
       # 9. JAR 전송
