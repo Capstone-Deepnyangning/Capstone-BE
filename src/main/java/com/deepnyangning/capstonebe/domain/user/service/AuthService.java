@@ -30,6 +30,7 @@ public class AuthService {
     private static final String REDIS_PREFIX = "RT:";
 
 
+    @Transactional
     public void signup(SignupRequest request){
         if(userService.existsByIdentifier(request.getIdentifier())){
             throw new CustomException(ErrorCode.DUPLICATE_IDENTIFIER);
