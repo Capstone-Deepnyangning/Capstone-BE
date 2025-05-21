@@ -23,7 +23,7 @@ import java.util.List;
 @Component
 @RequiredArgsConstructor
 public class AiServerClient {
-    private static final String AI_SERVER_URL = "https://927a-116-44-51-91.ngrok-free.app/register_face";
+    private static final String AI_SERVER_URL = "https://efba-116-44-51-91.ngrok-free.app/register_face";
     private final RestTemplate restTemplate;
 
 
