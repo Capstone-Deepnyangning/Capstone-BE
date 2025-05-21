@@ -85,17 +85,15 @@ public interface UserControllerDocs {
                     **처리 흐름**
                     - 로그인된 사용자 식별
                     - 해당 사용자 엔티티의 active 값을 false로 설정
+                    - DB의 사용자 FaceData 삭제
+                    - ai 서버에 얼굴 데이터 삭제 요청 (비동기로 처리되어 AI 서버의 응답을 기다리지 않고 탈퇴 응답)
                                         
                     **예외 사항**
                     - 사용자가 존재하지 않는 경우 예외 발생
                                         
                     **요청 헤더**
                                     
-                    - `Authorization: Bearer {accessToken}` : 사용자 인증을 위해 accessToken을 헤더에 포함해야 합니다.
-                                        
-                    **요청 필드**
-                    - `currentPassword` : 현재 비밀번호 (예: "oldpassword123")
-                    - `newPassword` : 새 비밀번호 (예: "newpassword456")                    
+                    - `Authorization: Bearer {accessToken}` : 사용자 인증을 위해 accessToken을 헤더에 포함해야 합니다.          
                                         
                     **응답**
                     - `ApiResponse<Void>`
