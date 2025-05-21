@@ -5,6 +5,7 @@ import com.deepnyangning.capstonebe.global.code.ErrorCode;
 import com.deepnyangning.capstonebe.global.exception.CustomException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.http.*;
@@ -23,7 +24,8 @@ import java.util.List;
 @Component
 @RequiredArgsConstructor
 public class AiServerClient {
-    private static final String AI_SERVER_URL = "https://efba-116-44-51-91.ngrok-free.app";
+    @Value("${ai.server-url}")
+    private String AI_SERVER_URL;
     private final RestTemplate restTemplate;
 
 
