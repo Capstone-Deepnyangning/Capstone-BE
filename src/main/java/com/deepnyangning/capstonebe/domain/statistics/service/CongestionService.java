@@ -48,9 +48,13 @@ public class CongestionService {
 
     // 혼잡도 데이터 반환
     public CongestionResponse getCongestionData(){
+        int currentUsers = getCurrentUsers();
+        int avgUsers = getAverageUsers();
+
         return CongestionResponse.builder()
-                .currentUsers(getCurrentUsers())
-                .avgUsers(getAverageUsers())
+                .currentUsers(currentUsers)
+                .avgUsers(avgUsers)
+                .message(generateCongestionMessage(currentUsers, avgUsers))
                 .build();
     }
 
@@ -69,6 +73,32 @@ public class CongestionService {
                 .sum();
 
         return sum / dailyCnt.size();
+    }
+
+    // 혼잡도 메시지 생성
+    private String generateCongestionMessage(int current, int average){
+        if(average == 0){
+            return "데이터 부족";
+        }
+
+        double diffPercent = ((double) (current-average)/average) * 100;
+        String trend = diffPercent >= 0 ? "많음" : "적음";
+
+        String level;
+        if(diffPercent <= -20){
+            level = "여유";
+        }
+        else if(diffPercent <= 10){
+            level = "보통";
+        }
+        else if(diffPercent <= 30){
+            level = "약간 혼잡";
+        }
+        else {
+            level = "혼잡";
+        }
+
+        return String.format("평균보다 %.0f%% %s (%s)", diffPercent, trend, level);
     }
 
     // 평균 방문자 수 캐시 갱신
