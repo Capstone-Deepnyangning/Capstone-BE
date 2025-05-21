@@ -23,18 +23,19 @@ import java.util.List;
 @Component
 @RequiredArgsConstructor
 public class AiServerClient {
-    private static final String AI_SERVER_URL = "https://927a-116-44-51-91.ngrok-free.app/register_face";
+    private static final String AI_SERVER_URL = "https://efba-116-44-51-91.ngrok-free.app";
     private final RestTemplate restTemplate;
 
 
     public String sendFaceDataToAiServer(MultipartFile file, String identifier){
+        String url = AI_SERVER_URL + "/register_face";
         try {
             if (file == null || file.isEmpty()) {
                 log.error("파일이 없거나 비어 있음");
                 throw new CustomException(ErrorCode.INVALID_VIDEO_FILE);
             }
 
-            log.info("파일 전송: URL={}, 이름={}, 크기={}, identifier={}", AI_SERVER_URL, file.getOriginalFilename(), file.getSize(), identifier);
+            log.info("파일 전송: URL={}, 이름={}, 크기={}, identifier={}", url, file.getOriginalFilename(), file.getSize(), identifier);
 
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.MULTIPART_FORM_DATA);
@@ -48,7 +49,7 @@ public class AiServerClient {
 
             HttpEntity<MultiValueMap<String, Object>> request = new HttpEntity<>(body, headers);
 
-            ResponseEntity<AiResponse> response = restTemplate.exchange(AI_SERVER_URL, HttpMethod.POST, request, AiResponse.class);
+            ResponseEntity<AiResponse> response = restTemplate.exchange(url, HttpMethod.POST, request, AiResponse.class);
 
             tempFile.delete();
 
@@ -59,7 +60,41 @@ public class AiServerClient {
                 return "FAIL";
             }
         } catch (HttpClientErrorException.NotFound e) {
-            log.error("AI 서버 엔드포인트 없음 (404): URL={}", AI_SERVER_URL, e);
+            log.error("AI 서버 엔드포인트 없음 (404): URL={}", url, e);
+            throw new CustomException(ErrorCode.AI_SERVER_ENDPOINT_NOT_FOUND);
+        } catch (ResourceAccessException e) {
+            log.error("AI 서버 연결 실패: {}", e.getMessage(), e);
+            throw new CustomException(ErrorCode.AI_SERVER_UNREACHABLE);
+        } catch (Exception e) {
+            log.error("AI 서버 호출 실패: {}", e.getMessage(), e);
+            throw new CustomException(ErrorCode.AI_SERVER_COMMUNICATION_FAILED);
+        }
+    }
+
+    public String sendDeleteFaceToAiServer(String identifier, boolean removeFolder){
+        String url = AI_SERVER_URL + "/delete_face";
+        try {
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.MULTIPART_FORM_DATA);
+
+            MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
+            body.add("identifier", identifier);
+            body.add("remove_folder", String.valueOf(removeFolder)); // true 또는 false 문자열로 전달
+
+            HttpEntity<MultiValueMap<String, Object>> request = new HttpEntity<>(body, headers);
+
+            ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.POST, request, String.class);
+
+            if (response.getStatusCode().is2xxSuccessful()) {
+                log.info("AI 서버 얼굴 삭제 요청 성공: {}", response.getBody());
+                return "SUCCESS";
+            } else {
+                log.warn("AI 서버 얼굴 삭제 실패: 상태={}, 응답={}", response.getStatusCode(), response.getBody());
+                return "FAIL";
+            }
+
+        } catch (HttpClientErrorException.NotFound e) {
+            log.error("AI 서버 엔드포인트 없음 (404): URL={}", url, e);
             throw new CustomException(ErrorCode.AI_SERVER_ENDPOINT_NOT_FOUND);
         } catch (ResourceAccessException e) {
             log.error("AI 서버 연결 실패: {}", e.getMessage(), e);

@@ -40,4 +40,9 @@ public class FaceDataService {
             user.setFaceRegistered(true);
         }
     }
+
+    @Transactional
+    public void deleteFaceByUser(User user){
+        faceDataRepository.deleteAllByUser(user);
+    }
 }
