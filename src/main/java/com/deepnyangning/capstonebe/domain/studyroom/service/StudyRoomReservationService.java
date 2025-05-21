@@ -1,10 +1,8 @@
 package com.deepnyangning.capstonebe.domain.studyroom.service;
 
-import com.deepnyangning.capstonebe.domain.studyroom.dto.AdminReservationResponse;
-import com.deepnyangning.capstonebe.domain.studyroom.dto.ReservationRequest;
-import com.deepnyangning.capstonebe.domain.studyroom.dto.ReservationResponse;
-import com.deepnyangning.capstonebe.domain.studyroom.dto.ReservationUpdate;
+import com.deepnyangning.capstonebe.domain.studyroom.dto.*;
 import com.deepnyangning.capstonebe.domain.studyroom.entity.ReservationStatus;
+import com.deepnyangning.capstonebe.domain.studyroom.entity.StudyRoom;
 import com.deepnyangning.capstonebe.domain.studyroom.entity.StudyRoomReservation;
 import com.deepnyangning.capstonebe.domain.studyroom.mapper.StudyRoomReservationMapper;
 import com.deepnyangning.capstonebe.domain.studyroom.repository.StudyRoomReservationRepository;
@@ -17,9 +15,13 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -65,6 +67,48 @@ public class StudyRoomReservationService {
     public ReservationResponse findReservationById(Long id){
         return reservationMapper.toResponseDto(reservationRepository.findById(id)
                 .orElseThrow(() -> new CustomException(ErrorCode.RESERVATION_NOT_FOUND)));
+    }
+
+    public List<AvailableTimeOption> findAvailableTimes(Long studyRoomId, LocalDate date){
+        StudyRoom studyRoom = studyRoomService.findStudyRoomById(studyRoomId);
+        List<StudyRoomReservation> reservations = reservationRepository.findByStudyRoomAndDateAndStatusNot(studyRoom, date, ReservationStatus.CANCELED);
+
+        int endHour = (date.getDayOfWeek() == DayOfWeek.SATURDAY) ? 16 : 21;
+        LocalTime START = LocalTime.of(10, 0);
+        LocalTime END = LocalTime.of(endHour, 0);
+
+        Set<LocalTime> reservedSlots = new HashSet<>();
+        for(StudyRoomReservation res : reservations){
+            LocalTime cur = res.getStartTime();
+            while(cur.isBefore(res.getEndTime())){
+                reservedSlots.add(cur);
+                cur = cur.plusHours(1);
+            }
+        }
+
+        List<AvailableTimeOption> result = new ArrayList<>();
+        for(LocalTime start = START; start.isBefore(END); start = start.plusHours(1)){
+            if(reservedSlots.contains(start)) continue;
+
+            List<LocalTime> ends = new ArrayList<>();
+            LocalTime end1 = start.plusHours(1);
+            LocalTime end2 = start.plusHours(2);
+
+            // 1시간 예약 가능 여부
+            if(end1.isBefore(END.plusSeconds(1))){
+                ends.add(end1);
+            }
+
+            // 2시간 예약 가능 여부
+            if(!reservedSlots.contains(start.plusHours(1)) && end2.isBefore(END.plusSeconds(1))){
+                ends.add(end2);
+            }
+
+            if(!ends.isEmpty()){
+                result.add(new AvailableTimeOption(start, ends));
+            }
+        }
+        return result;
     }
 
     @Transactional

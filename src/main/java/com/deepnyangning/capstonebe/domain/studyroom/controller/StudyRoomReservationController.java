@@ -65,6 +65,13 @@ public class StudyRoomReservationController implements StudyRoomReservationContr
                 .body(ApiResponse.<ReservationResponse>builder().result(reservationResponse).success(true).code(200).message("스터디룸 예약 조회에 성공했습니다.").build());
     }
 
+    @GetMapping("/studyrooms/reservations/available-time")
+    public ResponseEntity<ApiResponse<List<AvailableTimeOption>>> getStudyRoomReservationAvailableTimes(@RequestParam Long studyRoomId, @RequestParam LocalDate date){
+        List<AvailableTimeOption> response = reservationService.findAvailableTimes(studyRoomId, date);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(ApiResponse.<List<AvailableTimeOption>>builder().result(response).success(true).code(200).message("스터디룸별 예약 가능한 시간 조회에 성공했습니다.").build());
+    }
+
     @PutMapping("/studyrooms/reservations/{reservationId}")
     public ResponseEntity<ApiResponse<ReservationResponse>> updateStudyRoomReservation(@PathVariable Long reservationId, @RequestBody ReservationUpdate reservationUpdate){
         ReservationResponse reservationResponse = reservationService.updateReservation(reservationId, reservationUpdate);
