@@ -71,7 +71,7 @@ public class AiServerClient {
         }
     }
 
-    public String sendDeleteFaceToAiServer(String identifier, boolean removeFolder){
+    public void sendDeleteFaceToAiServer(String identifier, boolean removeFolder){
         String url = AI_SERVER_URL + "/delete_face";
         try {
             HttpHeaders headers = new HttpHeaders();
@@ -87,10 +87,8 @@ public class AiServerClient {
 
             if (response.getStatusCode().is2xxSuccessful()) {
                 log.info("AI 서버 얼굴 삭제 요청 성공: {}", response.getBody());
-                return "SUCCESS";
             } else {
                 log.warn("AI 서버 얼굴 삭제 실패: 상태={}, 응답={}", response.getStatusCode(), response.getBody());
-                return "FAIL";
             }
 
         } catch (HttpClientErrorException.NotFound e) {
