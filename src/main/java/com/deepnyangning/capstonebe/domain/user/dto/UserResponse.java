@@ -3,6 +3,8 @@ package com.deepnyangning.capstonebe.domain.user.dto;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 
+import java.util.List;
+
 @Getter
 @Setter
 @Builder
@@ -17,4 +19,7 @@ public class UserResponse {
 
     @Schema(description = "얼굴 인식 등록 여부", example = "true")
     private boolean faceRegistered;
+
+    @Schema(description = "fcm token 리스트", example = "[\"fcmtokennnn\", \"fcmtokenenen\"]")
+    private List<String> fcmTokens;
 }
