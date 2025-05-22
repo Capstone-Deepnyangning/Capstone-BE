@@ -1,10 +1,13 @@
 package com.deepnyangning.capstonebe.domain.user.service;
 
 import com.deepnyangning.capstonebe.domain.face.service.FaceDataService;
+import com.deepnyangning.capstonebe.domain.notification.entity.FcmToken;
 import com.deepnyangning.capstonebe.domain.user.dto.PasswordUpdate;
+import com.deepnyangning.capstonebe.domain.user.dto.UserResponse;
 import com.deepnyangning.capstonebe.domain.user.entity.Role;
 import com.deepnyangning.capstonebe.domain.user.entity.User;
 import com.deepnyangning.capstonebe.domain.user.event.UserDeletedEvent;
+import com.deepnyangning.capstonebe.domain.user.mapper.UserMapper;
 import com.deepnyangning.capstonebe.domain.user.repository.UserRepository;
 import com.deepnyangning.capstonebe.external.ai.AiServerClient;
 import com.deepnyangning.capstonebe.global.code.ErrorCode;

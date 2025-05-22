@@ -21,4 +21,9 @@ public class FcmToken extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;
+
+    public void assignUser(User user){
+        this.user = user;
+        user.getFcmTokens().add(this);
+    }
 }

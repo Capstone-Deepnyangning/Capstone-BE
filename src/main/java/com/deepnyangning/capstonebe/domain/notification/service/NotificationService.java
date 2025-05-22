@@ -34,9 +34,10 @@ public class NotificationService {
         }
 
         FcmToken fcmToken = FcmToken.builder()
-                .user(user)
                 .token(token)
                 .build();
+        fcmToken.assignUser(user);
+
         fcmTokenRepository.save(fcmToken);
     }
 

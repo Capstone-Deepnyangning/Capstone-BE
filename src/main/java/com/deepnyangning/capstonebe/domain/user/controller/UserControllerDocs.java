@@ -21,7 +21,7 @@ public interface UserControllerDocs {
                     **처리 흐름**
                     - AuthenticationPrincipal로 사용자 식별
                     - 해당 학번으로 사용자 조회
-                    - 사용자 정보 응답 반환 (학번, 이름, 얼굴 등록 여부)
+                    - 사용자 정보 응답 반환 (학번, 이름, 얼굴 등록 여부, fcm token 리스트)
                     
                     **요청 헤더**
                                     
@@ -38,6 +38,7 @@ public interface UserControllerDocs {
                         - `identifier`: 사용자 학번 (예: "21011805")
                         - `name`: 사용자 이름 (예: "장윤정")
                         - `faceRegistered`: 얼굴 등록 여부 (예: true)
+                        - `fcmTokens`: fcm token 리스트 (예: ["fcmtokennnn", "fcmtokenenen"]
                     """
     )
     public ResponseEntity<ApiResponse<UserResponse>> getMyPage(@AuthenticationPrincipal UserDetails userDetails);

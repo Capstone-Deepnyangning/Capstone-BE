@@ -1,9 +1,13 @@
 package com.deepnyangning.capstonebe.domain.user.entity;
 
+import com.deepnyangning.capstonebe.domain.notification.entity.FcmToken;
 import com.deepnyangning.capstonebe.domain.user.entity.Role;
 import com.deepnyangning.capstonebe.global.util.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -31,4 +35,6 @@ public class User extends BaseEntity {
     @Builder.Default
     private boolean isFaceRegistered = false;
 
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    private List<FcmToken> fcmTokens = new ArrayList<>();
 }
