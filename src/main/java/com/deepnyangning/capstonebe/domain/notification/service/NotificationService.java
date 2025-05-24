@@ -53,7 +53,7 @@ public class NotificationService {
                 Message fcmMessage = Message.builder()
                         .setToken(token.getToken())
                         .setNotification(Notification.builder()
-                                .setTitle("딥냥닝") // 추후 변경
+                                .setTitle("DeepNyangNing")
                                 .setBody(message)
                                 .build()
                         )
