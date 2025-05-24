@@ -92,13 +92,13 @@ public class StudyRoomReservationController implements StudyRoomReservationContr
     }
 
     @GetMapping("/admin/studyrooms/reservations")
-    public ResponseEntity<ApiResponse<CursorPage<AdminReservationResponse>>> getStudyRoomReservations(@RequestParam(required = false) String name,
-                                                                                                      @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate cursorDate,
-                                                                                                      @RequestParam(required = false) @DateTimeFormat(pattern = "HH:mm") LocalTime cursorStartTime,
-                                                                                                      @RequestParam(defaultValue = "7") int size){
-        List<AdminReservationResponse> response = reservationService.findReservationsByStudyRoomName(name, cursorDate, cursorStartTime, size);
+    public ResponseEntity<ApiResponse<Page<AdminReservationResponse>>> getStudyRoomReservations(@RequestParam(required = false) String name,
+                                                                                           @RequestParam(defaultValue = "0") int page,
+                                                                                           @RequestParam(defaultValue = "7") int size){
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Order.desc("date"), Sort.Order.desc("startTime")));
+        Page<AdminReservationResponse> reservationResponses = reservationService.findReservationsByStudyRoomName(name, pageable);
         return ResponseEntity.status(HttpStatus.OK)
-                .body(ApiResponse.<CursorPage<AdminReservationResponse>>builder().result(CursorPage.of(response, size)).success(true).code(200).message("스터디룸 예약 전체 조회에 성공했습니다.").build());
+                .body(ApiResponse.<Page<AdminReservationResponse>>builder().result(reservationResponses).success(true).code(200).message("스터디룸 예약 전체 조회에 성공했습니다.").build());
     }
 
     @PutMapping("/admin/studyrooms/reservations/{reservationId}")

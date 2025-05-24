@@ -5,6 +5,7 @@ import com.deepnyangning.capstonebe.domain.studyroom.dto.*;
 import com.deepnyangning.capstonebe.global.response.ApiResponse;
 import com.deepnyangning.capstonebe.global.response.CursorPage;
 import io.swagger.v3.oas.annotations.Operation;
+import org.springframework.data.domain.Page;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -338,7 +339,7 @@ public interface StudyRoomReservationControllerDocs {
             description = """
                     **관리자용 스터디룸 예약 전체 조회**
                                               
-                    스터디룸 예약 전체 목록을 커서 기반 페이징으로 조회합니다. \s
+                    스터디룸 예약 전체 목록을 조회합니다. \s
                     사용자 기준 조회와 달리 예약한 사용자 정보가 추가로 포함됩니다. \s
                     name 파라미터를 통해 스터디룸 이름으로 검색할 수 있으며, 띄어쓰기 여부와 관계없이 적용됩니다. \s
                     관리자만 접근 가능합니다. 
@@ -352,8 +353,7 @@ public interface StudyRoomReservationControllerDocs {
                     **요청 파라미터**
                                         
                     - `name` (optional) : 스터디룸 이름 필터링 (예: "03 스터디룸(4층)")
-                    - `cursorDate` (optional) : 마지막으로 조회한 예약 날짜. 해당 날짜 이전의 예약 목록이 조회됩니다. (예: "2025-05-20")
-                    - `cursorStartTime` (optional) : cursorDate가 같은 경우 해당 시간 이전의 예약이 조회됩니다. (예: "13:00")
+                    - `page` (optional) : 현재 페이지 (예: 0)
                     - `size` (optional, default=7) : 조회할 예약 개수 (예: 7)
                                         
                                         
@@ -386,10 +386,9 @@ public interface StudyRoomReservationControllerDocs {
                                 - `date`: 이용 날짜 (예: "2025-05-20")
                     """
     )
-    ResponseEntity<ApiResponse<CursorPage<AdminReservationResponse>>> getStudyRoomReservations(@RequestParam(required = false) String name,
-                                                                                               @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate cursorDate,
-                                                                                               @RequestParam(required = false) @DateTimeFormat(pattern = "HH:mm") LocalTime cursorStartTime,
-                                                                                               @RequestParam(defaultValue = "7") int size);
+    public ResponseEntity<ApiResponse<Page<AdminReservationResponse>>> getStudyRoomReservations(@RequestParam(required = false) String name,
+                                                                                                @RequestParam(defaultValue = "0") int page,
+                                                                                                @RequestParam(defaultValue = "7") int size);
 
     @Operation(
             summary = "관리자용 스터디룸 예약 상태 변경 API",

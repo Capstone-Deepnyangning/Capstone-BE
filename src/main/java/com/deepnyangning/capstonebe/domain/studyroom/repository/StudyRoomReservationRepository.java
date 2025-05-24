@@ -63,4 +63,7 @@ public interface StudyRoomReservationRepository extends JpaRepository<StudyRoomR
     List<StudyRoomReservation> findByDateAndStatusNot(LocalDate date, ReservationStatus status);
 
     List<StudyRoomReservation> findByStudyRoomAndDateAndStatusNot(StudyRoom studyRoom, LocalDate date, ReservationStatus status);
+
+    @Query("SELECT r FROM StudyRoomReservation r WHERE REPLACE(UPPER(r.studyRoom.name), ' ', '') LIKE %:name%")
+    Page<StudyRoomReservation> findStudyRoomReservationsByStudyRoomName(@Param("name") String name, Pageable pageable);
 }
