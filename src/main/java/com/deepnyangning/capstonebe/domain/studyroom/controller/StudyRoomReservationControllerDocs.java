@@ -410,7 +410,7 @@ public interface StudyRoomReservationControllerDocs {
                     
                     
                     
-                    **요청 파라미터**
+                    **요청 필드**
                                         
                     - `status` : 변경할 예약 상태 (예: "CONFIRMED" or "CANCELED" or "COMPLETED")
                     
@@ -444,6 +444,6 @@ public interface StudyRoomReservationControllerDocs {
                                 - `date`: 이용 날짜 (예: "2025-05-20")
                     """
     )
-    ResponseEntity<ApiResponse<AdminReservationResponse>> updateStudyRoomReservationStatus(@PathVariable Long reservationId, @RequestParam String status);
+    ResponseEntity<ApiResponse<AdminReservationResponse>> updateStudyRoomReservationStatus(@PathVariable Long reservationId, @RequestBody ReservationStatusUpdate request);
 
 }

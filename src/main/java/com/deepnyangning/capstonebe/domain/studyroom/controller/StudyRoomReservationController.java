@@ -102,8 +102,8 @@ public class StudyRoomReservationController implements StudyRoomReservationContr
     }
 
     @PutMapping("/admin/studyrooms/reservations/{reservationId}")
-    public ResponseEntity<ApiResponse<AdminReservationResponse>> updateStudyRoomReservationStatus(@PathVariable Long reservationId, @RequestParam String status){
-        AdminReservationResponse reservationResponse = reservationService.updateReservationStatus(reservationId, status);
+    public ResponseEntity<ApiResponse<AdminReservationResponse>> updateStudyRoomReservationStatus(@PathVariable Long reservationId, @RequestBody ReservationStatusUpdate request){
+        AdminReservationResponse reservationResponse = reservationService.updateReservationStatus(reservationId, request.getStatus());
         return ResponseEntity.status(HttpStatus.OK)
                 .body(ApiResponse.<AdminReservationResponse>builder().result(reservationResponse).success(true).code(200).message("스터디룸 예약 상태 변경에 성공했습니다.").build());
     }

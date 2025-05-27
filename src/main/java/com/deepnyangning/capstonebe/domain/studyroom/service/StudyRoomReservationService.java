@@ -131,16 +131,16 @@ public class StudyRoomReservationService {
     }
 
     @Transactional
-    public AdminReservationResponse updateReservationStatus(Long id, String status){
+    public AdminReservationResponse updateReservationStatus(Long id, ReservationStatus status){
         StudyRoomReservation reservation = reservationRepository.findById(id)
                 .orElseThrow(() -> new CustomException(ErrorCode.RESERVATION_NOT_FOUND));
-        reservation.setStatus(ReservationStatus.valueOf(status));
+        reservation.setStatus(status);
         return reservationMapper.toAdminResponse(reservation);
     }
 
     @Transactional
     public void cancelReservation(Long id){
-        updateReservationStatus(id, "CANCELED");
+        updateReservationStatus(id, ReservationStatus.CANCELED);
     }
 
     @Scheduled(cron = "0 0 * * * *")
