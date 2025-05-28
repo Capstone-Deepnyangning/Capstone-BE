@@ -7,6 +7,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 
 public interface FaceIssueReportControllerDocs {
@@ -113,5 +114,5 @@ public interface FaceIssueReportControllerDocs {
                           - `updatedAt`: 신고 수정 시간 (예: "2024-05-20T09:12:45")
                     """
     )
-    public ResponseEntity<ApiResponse<FaceIssueReportResponse>> getFaceIssueReport(@RequestParam Long reportId);
+    public ResponseEntity<ApiResponse<FaceIssueReportResponse>> getFaceIssueReport(@PathVariable("reportId") Long reportId);
 }

@@ -38,7 +38,7 @@ public class FaceIssueReportController implements FaceIssueReportControllerDocs 
     }
 
     @GetMapping("/admin/reports/{reportId}")
-    public ResponseEntity<ApiResponse<FaceIssueReportResponse>> getFaceIssueReport(@PathVariable Long reportId){
+    public ResponseEntity<ApiResponse<FaceIssueReportResponse>> getFaceIssueReport(@PathVariable("reportId") Long reportId){
         FaceIssueReportResponse response = faceIssueReportService.findFaceIssueReport(reportId);
         return ResponseEntity.status(HttpStatus.OK)
                 .body(ApiResponse.<FaceIssueReportResponse>builder().result(response).success(true).code(200).message("안면 인식 문제 신고 상세 정보를 성공적으로 조회했습니다.").build());
