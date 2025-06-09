@@ -11,15 +11,12 @@ import java.time.LocalDateTime;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class FaceIssueReportResponse {
+public class FaceIssuePreviewResponse {
     @Schema(description = "신고 ID", example = "5")
     private Long id;
 
     @Schema(description = "사용자 학번", example = "21011805")
     private String identifier;
-
-    @Schema(description = "사용자 이름", example = "장윤정")
-    private String name;
 
     @Schema(description = "관리자 확인 여부", example = "false")
     private boolean read;
@@ -31,4 +28,5 @@ public class FaceIssueReportResponse {
     @Schema(description = "신고 수정 시간", example = "2024-05-20T09:12:45")
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime updatedAt;
+
 }

@@ -11,6 +11,8 @@ import com.deepnyangning.capstonebe.domain.user.service.UserService;
 import com.deepnyangning.capstonebe.global.code.ErrorCode;
 import com.deepnyangning.capstonebe.global.exception.CustomException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -52,10 +54,14 @@ public class StudyRoomReservationService {
         return reservationMapper.toResponseDto(reservation);
     }
 
-    public List<AdminReservationResponse> findReservationsByStudyRoomName(String name, LocalDate cursorDate, LocalTime cursorStartTime, int size) {
-        String formattedName = (name == null || name.isBlank()) ? null : name.toUpperCase().replace(" ", "");
-        List<StudyRoomReservation> reservations = reservationRepository.findByStudyRoomName(formattedName, cursorDate, cursorStartTime, size+1);
-        return reservations.stream().map(reservationMapper::toAdminResponse).toList();
+    public Page<AdminReservationResponse> findReservationsByStudyRoomName(String name, Pageable pageable){
+        Page<StudyRoomReservation> reservations;
+        if (name == null || name.trim().isEmpty()) {
+            reservations = reservationRepository.findAll(pageable);
+        } else{
+            reservations = reservationRepository.findStudyRoomReservationsByStudyRoomName(name.toUpperCase().replace(" ", ""), pageable);
+        }
+        return reservations.map(reservationMapper::toAdminResponse);
     }
 
     public List<ReservationResponse> findReservationsByUser(String identifier, LocalDate cursorDate, int size){
@@ -125,16 +131,16 @@ public class StudyRoomReservationService {
     }
 
     @Transactional
-    public AdminReservationResponse updateReservationStatus(Long id, String status){
+    public AdminReservationResponse updateReservationStatus(Long id, ReservationStatus status){
         StudyRoomReservation reservation = reservationRepository.findById(id)
                 .orElseThrow(() -> new CustomException(ErrorCode.RESERVATION_NOT_FOUND));
-        reservation.setStatus(ReservationStatus.valueOf(status));
+        reservation.setStatus(status);
         return reservationMapper.toAdminResponse(reservation);
     }
 
     @Transactional
     public void cancelReservation(Long id){
-        updateReservationStatus(id, "CANCELED");
+        updateReservationStatus(id, ReservationStatus.CANCELED);
     }
 
     @Scheduled(cron = "0 0 * * * *")

@@ -1,5 +1,6 @@
 package com.deepnyangning.capstonebe.domain.face.service;
 
+import com.deepnyangning.capstonebe.domain.face.dto.FaceIssuePreviewResponse;
 import com.deepnyangning.capstonebe.domain.face.dto.FaceIssueReportResponse;
 import com.deepnyangning.capstonebe.domain.face.entity.FaceIssueReport;
 import com.deepnyangning.capstonebe.domain.face.event.FaceIssueReportCreatedEvent;
@@ -38,9 +39,9 @@ public class FaceIssueReportService {
         return faceIssueReportMapper.toResponseDto(faceIssueReport);
     }
 
-    public Page<FaceIssueReportResponse> findFaceIssueReports(Pageable pageable){
+    public Page<FaceIssuePreviewResponse> findFaceIssueReports(Pageable pageable){
         Page<FaceIssueReport> faceIssueReports = faceIssueReportRepository.findAllByOrderByCreatedAtDesc(pageable);
-        return faceIssueReports.map(faceIssueReportMapper::toResponseDto);
+        return faceIssueReports.map(faceIssueReportMapper::toPreviewDto);
     }
 
     @Transactional

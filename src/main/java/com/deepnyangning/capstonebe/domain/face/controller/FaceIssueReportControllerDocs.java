@@ -1,5 +1,6 @@
 package com.deepnyangning.capstonebe.domain.face.controller;
 
+import com.deepnyangning.capstonebe.domain.face.dto.FaceIssuePreviewResponse;
 import com.deepnyangning.capstonebe.domain.face.dto.FaceIssueReportResponse;
 import com.deepnyangning.capstonebe.global.response.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -7,6 +8,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 
 public interface FaceIssueReportControllerDocs {
@@ -70,13 +72,13 @@ public interface FaceIssueReportControllerDocs {
                         - `message`: "안면 인식 문제 신고 목록을 성공적으로 조회했습니다."
                         - `result`: 신고 목록 페이지 데이터
                           - `id`: 신고 ID (예: 5)
-                          - `userId`: 사용자 ID (예: 2)
+                          - `identifier`: 사용자 학번 (예: 21011805)
                           - `read`: 관리자 확인 여부 (예: false)
                           - `createdAt`: 신고 생성 시간 (예: "2024-05-20T09:12:45")
                           - `updatedAt`: 신고 수정 시간 (예: "2024-05-20T09:12:45")
                     """
     )
-    public ResponseEntity<ApiResponse<Page<FaceIssueReportResponse>>> getFaceIssueReports(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "7") int size);
+    public ResponseEntity<ApiResponse<Page<FaceIssuePreviewResponse>>> getFaceIssueReports(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "7") int size);
 
     @Operation(
             summary = "안면 인식 문제 신고 상세 조회 API",
@@ -107,11 +109,12 @@ public interface FaceIssueReportControllerDocs {
                         - `message`: "안면 인식 문제 신고 상세 정보를 성공적으로 조회했습니다."
                         - `result`: 신고 상세 데이터
                           - `id`: 신고 ID (예: 5)
-                          - `userId`: 사용자 ID (예: 2)
+                          - `identifier`: 사용자 학번 (예: 21011805)
+                          - `name`: 사용자 이름 (예: 장윤정)
                           - `read`: 관리자 확인 여부 (예: true)
                           - `createdAt`: 신고 생성 시간 (예: "2024-05-20T09:12:45")
                           - `updatedAt`: 신고 수정 시간 (예: "2024-05-20T09:12:45")
                     """
     )
-    public ResponseEntity<ApiResponse<FaceIssueReportResponse>> getFaceIssueReport(@RequestParam Long reportId);
+    public ResponseEntity<ApiResponse<FaceIssueReportResponse>> getFaceIssueReport(@PathVariable("reportId") Long reportId);
 }
