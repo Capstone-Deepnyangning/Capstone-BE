@@ -14,13 +14,19 @@ java {
 }
 
 configurations {
-	compileOnly {
-		extendsFrom annotationProcessor
-	}
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
+    // 테스트 시 slf4j-simple 구현체가 포함되지 않도록 전역적으로 제외하여 로깅 충돌 방지
+    testImplementation {
+        exclude group: 'org.slf4j', module: 'slf4j-simple'
+    }
 }
 
 repositories {
-	mavenCentral()
+    mavenCentral()
+    // embedded-redis 라이브러리가 호스팅되는 JitPack 저장소 추가
+    maven { url 'https://jitpack.io' }
 }
 
 dependencies {
@@ -54,6 +60,28 @@ dependencies {
 
 	// firebase
 	implementation 'com.google.firebase:firebase-admin:9.2.0'
+
+    // =================== 테스트 관련 의존성 ===================
+    // Spring Boot 기본 테스트 스타터 (JUnit 5, Mockito, AssertJ 등 포함)
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+
+    // Mockito와 JUnit 5 연동을 위한 의존성 명시적 추가
+    testImplementation 'org.mockito:mockito-junit-jupiter'
+
+    // Spring Security 테스트 지원
+    testImplementation 'org.springframework.security:spring-security-test'
+
+    // 테스트용 인메모리 DB
+    testImplementation 'com.h2database:h2'
+
+    // 테스트 실행 시 내장 Redis 서버를 사용하기 위한 의존성
+    testImplementation 'com.github.codemonstur:embedded-redis:0.7.3'
+
+    // 테스트에서 MapStruct 프로세서를 사용하기 위함
+    testAnnotationProcessor "org.mapstruct:mapstruct-processor:1.5.5.Final"
+
+    // JUnit Platform 실행을 위한 런처
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
 
 tasks.named('test') {
