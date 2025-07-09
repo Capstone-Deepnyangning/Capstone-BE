@@ -30,12 +30,12 @@ public interface AccessLogRepository extends JpaRepository<AccessLog, Long>, Jpa
             "AND e.accessTime > a.accessTime)")
     int countCurrentUsers();
 
-    @Query("SELECT DATE(a.accessTime) as date, COUNT(DISTINCT a.user.id) as userCnt " +
-            "FROM AccessLog a " +
-            "WHERE a.accessType = 'ENTRY' " +
-            "AND a.accessTime >= :startDate " +
-            "AND a.accessTime < :endDate " +
-            "GROUP BY DATE(a.accessTime)")
-    List<Object[]> countDailyUsers(@Param("startDate") LocalDateTime startDate,
+  @Query("SELECT CAST(a.accessTime AS date) as date, COUNT(DISTINCT a.user.id) as userCnt " +
+         "FROM AccessLog a " +
+         "WHERE a.accessType = 'ENTRY' " +
+         "AND a.accessTime >= :startDate " +
+         "AND a.accessTime < :endDate " +
+         "GROUP BY CAST(a.accessTime AS date)")
+  List<Object[]> countDailyUsers(@Param("startDate") LocalDateTime startDate,
                                    @Param("endDate") LocalDateTime endDate);
 }
