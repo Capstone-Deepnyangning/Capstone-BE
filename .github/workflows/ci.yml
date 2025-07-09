@@ -8,6 +8,12 @@ jobs:
   test:
     runs-on: ubuntu-latest
 
+    services:
+      redis:
+        image: redis:7-alpine
+        ports:
+          - 6379:6379
+
     steps:
       - name: Checkout source
         uses: actions/checkout@v4
@@ -32,8 +38,8 @@ jobs:
 
       - name: Generate application-test.yml
         run: |
-            mkdir -p src/main/resources
-            cat <<EOF > src/main/resources/application-test.yml
+            mkdir -p src/test/resources
+            cat <<EOF > src/test/resources/application-test.yml
             spring:
               datasource:
                 driver-class-name: org.h2.Driver
@@ -43,15 +49,22 @@ jobs:
             
               jpa:
                 hibernate:
-                  ddl-auto: create
+                  ddl-auto: create-drop
                 show-sql: true
                 database-platform: org.hibernate.dialect.H2Dialect
+                properties:
+                  hibernate:
+                    # H2에서 MySQL 문법을 사용하기 위한 설정
+                    dialect: org.hibernate.dialect.H2Dialect
+                    # 이 설정을 추가하여 모든 DB 식별자(테이블, 컬럼명 등)에 따옴표를 붙입니다.
+                    # "user"와 같은 예약어와의 충돌을 근본적으로 방지합니다.
+                    globally_quoted_identifiers: true
             
               data:
                 redis:
-                  host: ${{ secrets.REDIS_HOST }}
-                  port: ${{ secrets.REDIS_PORT }}
-                  password: ${{ secrets.REDIS_PASSWORD }}
+                  host: redis
+                  port: 6379
+                  #password: ""
             
             jwt:
               secret-key: ${{ secrets.JWT_SECRET_KEY }}
