@@ -8,12 +8,6 @@ jobs:
   test:
     runs-on: ubuntu-latest
 
-    services:
-      redis:
-        image: redis:7-alpine
-        ports:
-          - 6379:6379
-
     steps:
       - name: Checkout source
         uses: actions/checkout@v4
@@ -23,6 +17,9 @@ jobs:
         with:
           java-version: '17'
           distribution: 'corretto'
+
+      - name: Start Redis container
+        run: docker run -d --name redis-test -p 6379:6379 redis:7-alpine
 
       - name: Cache Gradle
         uses: actions/cache@v3
@@ -62,7 +59,7 @@ jobs:
             
               data:
                 redis:
-                  host: redis
+                  host: localhost
                   port: 6379
                   #password: ""
             
